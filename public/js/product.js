@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const specsSection = document.getElementById('specsSection');
 
   try {
-    const res = await fetch('/data/product-' + productId + '.json');
+    const res = await fetch('/api/products/' + productId);
     if (!res.ok) throw new Error('Товар не найден');
     const product = await res.json();
 
@@ -54,6 +54,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       stockEl.textContent = 'Нет в наличии';
       stockEl.className = 'product-page__stock product-page__stock--out';
+    }
+
+    /* Кнопка «В корзину» */
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', () => {
+        Cart.add(product.id, product.name, product.price, product.image);
+        showToast('Товар добавлен в корзину');
+        addToCartBtn.textContent = 'В корзине';
+        addToCartBtn.classList.add('btn--in-cart');
+      });
     }
 
     /* Кнопка сравнения */

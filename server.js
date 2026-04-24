@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
+const crypto = require('crypto');
 const Database = require('better-sqlite3');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SECRET = 'technomir-secret-2024';
 
 const dbPath = path.join(__dirname, 'db', 'technomir.db');
 let db;
@@ -19,6 +21,45 @@ try {
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+/* ───────── Утилиты авторизации ───────── */
+
+function hashPassword(pwd) {
+  return crypto.createHash('sha256').update(pwd).digest('hex');
+}
+
+function createToken(user) {
+  const payload = JSON.stringify({ id: user.id, role: user.role, exp: Date.now() + 7 * 24 * 3600000 });
+  const sig = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
+  return Buffer.from(payload).toString('base64') + '.' + sig;
+}
+
+function verifyToken(token) {
+  if (!token) return null;
+  const [b64, sig] = token.split('.');
+  if (!b64 || !sig) return null;
+  const payload = Buffer.from(b64, 'base64').toString();
+  const check = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
+  if (check !== sig) return null;
+  const data = JSON.parse(payload);
+  if (data.exp < Date.now()) return null;
+  return data;
+}
+
+function authMiddleware(req, res, next) {
+  const header = req.headers.authorization;
+  const token = header && header.startsWith('Bearer ') ? header.slice(7) : null;
+  const data = verifyToken(token);
+  if (!data) return res.status(401).json({ error: 'Необходима авторизация' });
+  req.user = db.prepare('SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?').get(data.id);
+  if (!req.user) return res.status(401).json({ error: 'Пользователь не найден' });
+  next();
+}
+
+function adminMiddleware(req, res, next) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Доступ запрещён' });
+  next();
+}
 
 /* ───────── API: Категории ───────── */
 
@@ -125,6 +166,126 @@ app.post('/api/compare', (req, res) => {
   }
 
   res.json({ products, specGroups });
+});
+
+/* ───────── API: Авторизация ───────── */
+
+app.post('/api/auth/register', (req, res) => {
+  const { name, email, phone, password } = req.body;
+  if (!name || !email || !password) return res.status(400).json({ error: 'Заполните все обязательные поля' });
+  if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
+
+  const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+  if (exists) return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
+
+  const info = db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
+    .run(name, email, phone || null, hashPassword(password), 'client');
+
+  const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(info.lastInsertRowid);
+  const token = createToken(user);
+  res.json({ user, token });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'Введите email и пароль' });
+
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  if (!user || user.password !== hashPassword(password)) {
+    return res.status(401).json({ error: 'Неверный email или пароль' });
+  }
+
+  const token = createToken(user);
+  const { password: _, ...safeUser } = user;
+  res.json({ user: safeUser, token });
+});
+
+app.get('/api/auth/me', authMiddleware, (req, res) => {
+  res.json(req.user);
+});
+
+/* ───────── API: Заказы (клиент) ───────── */
+
+app.post('/api/orders', authMiddleware, (req, res) => {
+  const { items, address, comment } = req.body;
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Корзина пуста' });
+  }
+
+  let total = 0;
+  const validated = [];
+  for (const item of items) {
+    const product = db.prepare('SELECT id, price, name FROM products WHERE id = ?').get(item.product_id);
+    if (!product) return res.status(400).json({ error: `Товар ${item.product_id} не найден` });
+    const qty = Math.max(1, parseInt(item.quantity) || 1);
+    total += product.price * qty;
+    validated.push({ product_id: product.id, price: product.price, quantity: qty });
+  }
+
+  const orderInfo = db.prepare('INSERT INTO orders (user_id, status, total, address, comment) VALUES (?, ?, ?, ?, ?)')
+    .run(req.user.id, 'new', total, address || '', comment || '');
+
+  const insertItem = db.prepare('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)');
+  for (const v of validated) {
+    insertItem.run(orderInfo.lastInsertRowid, v.product_id, v.quantity, v.price);
+  }
+
+  res.json({ order_id: orderInfo.lastInsertRowid, status: 'new', total });
+});
+
+app.get('/api/orders', authMiddleware, (req, res) => {
+  const orders = db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC').all(req.user.id);
+
+  for (const order of orders) {
+    order.items = db.prepare(
+      'SELECT oi.*, p.name, p.image FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?'
+    ).all(order.id);
+  }
+  res.json(orders);
+});
+
+app.put('/api/orders/:id/cancel', authMiddleware, (req, res) => {
+  const order = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+  if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  if (order.status !== 'new') return res.status(400).json({ error: 'Можно отменить только новые заказы' });
+
+  db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('cancelled', order.id);
+  res.json({ success: true });
+});
+
+/* ───────── API: Админ-панель ───────── */
+
+app.get('/api/admin/users', authMiddleware, adminMiddleware, (req, res) => {
+  const users = db.prepare('SELECT id, name, email, phone, role, created_at FROM users ORDER BY id').all();
+  for (const u of users) {
+    u.order_count = db.prepare('SELECT COUNT(*) as c FROM orders WHERE user_id = ?').get(u.id).c;
+    u.total_spent = db.prepare('SELECT COALESCE(SUM(total),0) as s FROM orders WHERE user_id = ? AND status != ?').get(u.id, 'cancelled').s;
+  }
+  res.json(users);
+});
+
+app.get('/api/admin/orders', authMiddleware, adminMiddleware, (req, res) => {
+  const orders = db.prepare(
+    'SELECT o.*, u.name as user_name, u.email as user_email FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC'
+  ).all();
+  for (const order of orders) {
+    order.items = db.prepare(
+      'SELECT oi.*, p.name, p.image FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?'
+    ).all(order.id);
+  }
+  res.json(orders);
+});
+
+app.put('/api/admin/orders/:id/status', authMiddleware, adminMiddleware, (req, res) => {
+  const { status } = req.body;
+  const valid = ['new', 'confirmed', 'delivered', 'cancelled'];
+  if (!valid.includes(status)) return res.status(400).json({ error: 'Недопустимый статус' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+  if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+
+  db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);
+  res.json({ success: true });
 });
 
 /* ───────── SPA fallback ───────── */

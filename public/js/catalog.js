@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* Загрузка категорий */
   try {
-    const cats = await fetch('/data/categories.json').then(r => r.json());
+    const cats = await fetch('/api/categories').then(r => r.json());
     for (const cat of cats) {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -39,13 +39,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* Загрузка товаров */
   loading.style.display = 'block';
   try {
+    let url = '/api/products?';
+    if (categoryId) url += 'category_id=' + categoryId + '&';
     if (searchQuery) {
+      url += 'search=' + encodeURIComponent(searchQuery) + '&';
       pageTitle.textContent = 'Результаты поиска: «' + searchQuery + '»';
     }
 
-    let products = await fetch('/data/products.json').then(r => r.json());
-    if (categoryId) products = products.filter(p => String(p.category_id) === categoryId);
-    if (searchQuery) products = products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const products = await fetch(url).then(r => r.json());
     loading.style.display = 'none';
 
     if (products.length === 0) {
@@ -90,6 +91,7 @@ function createProductCard(product) {
         <span class="product-card__price">${formatPrice(product.price)}</span>
         ${product.old_price ? `<span class="product-card__old-price">${formatPrice(product.old_price)}</span>` : ''}
       </div>
+      <button class="btn btn--primary btn--sm product-card__buy-btn" data-id="${product.id}">В корзину</button>
     </div>
   `;
 
@@ -98,6 +100,16 @@ function createProductCard(product) {
     e.preventDefault();
     e.stopPropagation();
     toggleCompare(product.id, compareBtn);
+  });
+
+  const buyBtn = card.querySelector('.product-card__buy-btn');
+  buyBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    Cart.add(product.id, product.name, product.price, product.image);
+    showToast('Товар добавлен в корзину');
+    buyBtn.textContent = 'В корзине';
+    buyBtn.classList.add('btn--in-cart');
   });
 
   return card;

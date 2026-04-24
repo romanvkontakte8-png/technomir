@@ -9,6 +9,9 @@ db.pragma('foreign_keys = ON');
 /* ───────── Создание таблиц ───────── */
 
 db.exec(`
+  DROP TABLE IF EXISTS order_items;
+  DROP TABLE IF EXISTS orders;
+  DROP TABLE IF EXISTS users;
   DROP TABLE IF EXISTS product_specs;
   DROP TABLE IF EXISTS products;
   DROP TABLE IF EXISTS categories;
@@ -40,8 +43,38 @@ db.exec(`
     spec_value TEXT NOT NULL
   );
 
+  CREATE TABLE users (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL,
+    email      TEXT NOT NULL UNIQUE,
+    phone      TEXT,
+    password   TEXT NOT NULL,
+    role       TEXT NOT NULL DEFAULT 'client',
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE orders (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id),
+    status     TEXT NOT NULL DEFAULT 'new',
+    total      INTEGER NOT NULL DEFAULT 0,
+    address    TEXT,
+    comment    TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE order_items (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id   INTEGER NOT NULL REFERENCES orders(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    quantity   INTEGER NOT NULL DEFAULT 1,
+    price      INTEGER NOT NULL
+  );
+
   CREATE INDEX idx_products_category ON products(category_id);
   CREATE INDEX idx_specs_product ON product_specs(product_id);
+  CREATE INDEX idx_orders_user ON orders(user_id);
+  CREATE INDEX idx_order_items_order ON order_items(order_id);
 `);
 
 /* ───────── Категории ───────── */
@@ -623,6 +656,20 @@ const addAll = db.transaction(() => {
 
 addAll();
 
+/* ───────── Администратор по умолчанию ───────── */
+const crypto = require('crypto');
+function hashPassword(pwd) {
+  return crypto.createHash('sha256').update(pwd).digest('hex');
+}
+
+db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
+  .run('Администратор', 'admin@texnomir.ru', '+7 (963) 753-88-33', hashPassword('admin123'), 'admin');
+
+db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
+  .run('Иван Петров', 'ivan@mail.ru', '+7 (999) 123-45-67', hashPassword('client123'), 'client');
+
 console.log('База данных ТехноМир успешно создана и наполнена!');
+console.log('Админ: admin@texnomir.ru / admin123');
+console.log('Клиент: ivan@mail.ru / client123');
 console.log(`Путь к БД: ${dbPath}`);
 db.close();

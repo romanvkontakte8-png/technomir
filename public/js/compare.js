@@ -28,37 +28,22 @@ async function loadComparison(ids) {
   emptyState.style.display = 'none';
 
   try {
-    /* Загружаем данные каждого товара из статических JSON */
-    const promises = ids.map(id => fetch('/data/product-' + id + '.json').then(r => r.json()));
-    const products = await Promise.all(promises);
+    const res = await fetch('/api/compare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids })
+    });
 
-    if (products.length === 0) {
+    if (!res.ok) throw new Error('Ошибка загрузки');
+    const data = await res.json();
+
+    if (data.products.length === 0) {
       loading.style.display = 'none';
       emptyState.style.display = 'block';
       return;
     }
 
-    /* Группировка характеристик (аналог серверной логики) */
-    const groupMap = {};
-    for (const p of products) {
-      if (!p.specs) continue;
-      for (const s of p.specs) {
-        if (!groupMap[s.spec_group]) groupMap[s.spec_group] = {};
-        if (!groupMap[s.spec_group][s.spec_name]) groupMap[s.spec_group][s.spec_name] = {};
-        groupMap[s.spec_group][s.spec_name][p.id] = s.spec_value;
-      }
-    }
-
-    const specGroups = Object.entries(groupMap).map(([group, specs]) => ({
-      group,
-      rows: Object.entries(specs).map(([name, values]) => {
-        const vals = Object.values(values);
-        const different = vals.length > 1 && !vals.every(v => v === vals[0]);
-        return { name, values, different };
-      })
-    }));
-
-    renderCompareTable({ products, specGroups });
+    renderCompareTable(data);
 
     loading.style.display = 'none';
     controls.style.display = 'flex';

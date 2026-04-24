@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация — ТехноМир</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="logo">
+      <span class="logo__icon">TM</span>
+      <span class="logo__text">ТехноМир</span>
+    </a>
+    <div class="header__actions">
+      <div class="header__auth" id="authBlock"><a href="/login.html">Войти</a></div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <div class="auth-form">
+      <h1>Регистрация</h1>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">Имя *</label>
+          <input type="text" id="name" required placeholder="Ваше имя">
+        </div>
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" required placeholder="Введите email">
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" id="phone" placeholder="+7 (999) 123-45-67">
+        </div>
+        <div class="form-group">
+          <label for="password">Пароль *</label>
+          <input type="password" id="password" required minlength="4" placeholder="Минимум 4 символа">
+        </div>
+        <div class="form-error" id="formError" style="display:none"></div>
+        <button type="submit" class="btn btn--primary btn--full">Зарегистрироваться</button>
+      </form>
+      <p class="auth-form__link">Уже есть аккаунт? <a href="/login.html">Войти</a></p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col">
+      <h3>ТехноМир</h3>
+      <p>Интернет-магазин электроники<br>г. Москва, ул. Профсоюзная, д. 56</p>
+      <p class="footer__copy">Дипломный проект — Григорьев Я.М., СИП 433/22</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('formError');
+  errEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error; errEl.style.display = 'block'; return; }
+
+    Auth.login(data.token, data.user);
+    window.location.href = '/';
+  } catch (err) {
+    errEl.textContent = 'Ошибка сервера'; errEl.style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>

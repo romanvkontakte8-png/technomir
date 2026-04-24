@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель — ТехноМир</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="logo">
+      <span class="logo__icon">TM</span>
+      <span class="logo__text">ТехноМир</span>
+    </a>
+    <div class="header__actions">
+      <a href="/" class="header__cart">
+        <span>Каталог</span>
+      </a>
+      <div class="header__auth" id="authBlock"><a href="/login.html">Войти</a></div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <h1 class="page-title">Админ-панель</h1>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="orders">Заказы</button>
+      <button class="admin-tab" data-tab="users">Клиенты</button>
+    </div>
+
+    <!-- Заказы -->
+    <div class="admin-panel" id="ordersPanel">
+      <div class="admin-filters">
+        <label>Фильтр: </label>
+        <select id="statusFilter">
+          <option value="">Все</option>
+          <option value="new">Новые</option>
+          <option value="confirmed">Подтверждённые</option>
+          <option value="delivered">Доставленные</option>
+          <option value="cancelled">Отменённые</option>
+        </select>
+      </div>
+      <div class="loading" id="ordersLoading">Загрузка...</div>
+      <div id="adminOrdersList"></div>
+    </div>
+
+    <!-- Клиенты -->
+    <div class="admin-panel" id="usersPanel" style="display:none;">
+      <div class="loading" id="usersLoading">Загрузка...</div>
+      <div id="adminUsersList"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col">
+      <h3>ТехноМир</h3>
+      <p>Интернет-магазин электроники<br>г. Москва, ул. Профсоюзная, д. 56</p>
+      <p class="footer__copy">Дипломный проект — Григорьев Я.М., СИП 433/22</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

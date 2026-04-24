@@ -94,7 +94,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 149990,
     old_price: 159990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-max-blacktitanium-select?wid=400',
+    image: '/img/products/iphone-15-pro-max-256-black.png',
     description: 'Флагманский смартфон Apple с чипом A17 Pro, титановым корпусом и камерой 48 Мп.',
     brand: 'Apple'
   }, [
@@ -127,7 +127,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 129990,
     old_price: 139990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-naturaltitanium-select?wid=400',
+    image: '/img/products/iphone-15-pro-256-natural.png',
     description: 'Мощный смартфон Apple с чипом A17 Pro и камерой 48 Мп в титановом корпусе.',
     brand: 'Apple'
   }, [
@@ -160,7 +160,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 89990,
     old_price: 99990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-blue-select?wid=400',
+    image: '/img/products/iphone-15-128-blue.png',
     description: 'Смартфон Apple с Dynamic Island, камерой 48 Мп и чипом A16 Bionic.',
     brand: 'Apple'
   }, [
@@ -193,7 +193,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 134990,
     old_price: 144990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/2401/gallery/ru-galaxy-s24-ultra-s928-sm-s928bzkdser-thumb-539572592?wid=400',
+    image: '/img/products/galaxy-s24-ultra-256-black.png',
     description: 'Флагман Samsung с AI-функциями, S Pen, камерой 200 Мп и титановой рамкой.',
     brand: 'Samsung'
   }, [
@@ -226,7 +226,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 79990,
     old_price: 89990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/2401/gallery/ru-galaxy-s24-s921-sm-s921bzkdser-thumb-539572448?wid=400',
+    image: '/img/products/galaxy-s24-256-black.png',
     description: 'Компактный флагман Samsung с AI, чипом Exynos 2400 и камерой 50 Мп.',
     brand: 'Samsung'
   }, [
@@ -259,7 +259,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartphones'],
     price: 109990,
     old_price: 119990,
-    image: 'https://i02.appmifile.com/images/2024/02/22/e90f8ed0-7ae2-4e30-b56c-904aa0c8e0e3.png?wid=400',
+    image: '/img/products/xiaomi-14-ultra-512-black.png',
     description: 'Камерофон Xiaomi с оптикой Leica, чипом Snapdragon 8 Gen 3 и зарядкой 90 Вт.',
     brand: 'Xiaomi'
   }, [
@@ -294,7 +294,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['laptops'],
     price: 219990,
     old_price: 239990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400',
+    image: '/img/products/macbook-pro-14-m3pro-512.png',
     description: 'Профессиональный ноутбук Apple с чипом M3 Pro, дисплеем Liquid Retina XDR и 18 ГБ ОЗУ.',
     brand: 'Apple'
   }, [
@@ -324,7 +324,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['laptops'],
     price: 159990,
     old_price: 174990,
-    image: 'https://dlcdnwebimgs.asus.com/gain/A3FC89DB-DA84-4C9E-A2D2-33E6CE8E2E2E/w400',
+    image: '/img/products/asus-rog-zephyrus-g14-2024.png',
     description: 'Игровой ультрабук ASUS с AMD Ryzen 9, RTX 4060, OLED-экраном 14" и 32 ГБ ОЗУ.',
     brand: 'ASUS'
   }, [
@@ -354,7 +354,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['laptops'],
     price: 179990,
     old_price: 199990,
-    image: 'https://p4-ofp.static.pub/fes/cms/2024/01/15/x1-carbon-gen12-hero.png?wid=400',
+    image: '/img/products/thinkpad-x1-carbon-gen12.png',
     description: 'Бизнес-ультрабук Lenovo с Intel Core Ultra 7, 2.8K OLED-экраном 14" и весом 1.08 кг.',
     brand: 'Lenovo'
   }, [
@@ -386,7 +386,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['tablets'],
     price: 109990,
     old_price: 119990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/ipad-pro-11-select-wifi-spaceblack-202405?wid=400',
+    image: '/img/products/ipad-pro-11-m4-256.png',
     description: 'Тонкий планшет Apple с чипом M4, Ultra Retina XDR OLED и поддержкой Apple Pencil Pro.',
     brand: 'Apple'
   }, [
@@ -412,7 +412,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['tablets'],
     price: 99990,
     old_price: 109990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-x910nzaaser/gallery/ru-galaxy-tab-s9-ultra-wifi-sm-x910-sm-x910nzaaser-thumb-537234836?wid=400',
+    image: '/img/products/galaxy-tab-s9-ultra-256.png',
     description: 'Большой планшет Samsung 14.6" с S Pen, Snapdragon 8 Gen 2 и Dynamic AMOLED 2X.',
     brand: 'Samsung'
   }, [
@@ -441,7 +441,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['headphones'],
     price: 24990,
     old_price: 27990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MQD83?wid=400',
+    image: '/img/products/airpods-pro-2-usbc.png',
     description: 'TWS-наушники Apple с активным шумоподавлением, адаптивным звуком и чипом H2.',
     brand: 'Apple'
   }, [
@@ -464,7 +464,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['headphones'],
     price: 34990,
     old_price: 39990,
-    image: 'https://store.sony.ru/upload/iblock/ed5/WH_1000XM5_B_01.png?wid=400',
+    image: '/img/products/sony-wh1000xm5-black.png',
     description: 'Накладные наушники Sony с лучшим в классе шумоподавлением и 30 часов работы.',
     brand: 'Sony'
   }, [
@@ -488,7 +488,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['headphones'],
     price: 18990,
     old_price: 21990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-r630nzaaser/gallery/ru-galaxy-buds3-pro-sm-r630-sm-r630nzaaser-thumb-539573032?wid=400',
+    image: '/img/products/galaxy-buds3-pro-black.png',
     description: 'TWS-наушники Samsung с ANC, 360 Audio и функциями Galaxy AI.',
     brand: 'Samsung'
   }, [
@@ -514,7 +514,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartwatches'],
     price: 79990,
     old_price: 84990,
-    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/watch-ultra-2?wid=400',
+    image: '/img/products/apple-watch-ultra2-49mm.png',
     description: 'Премиальные умные часы Apple в титановом корпусе с ярким дисплеем и двухчастотным GPS.',
     brand: 'Apple'
   }, [
@@ -543,7 +543,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['smartwatches'],
     price: 34990,
     old_price: 39990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-l955fzsaser/gallery/ru-galaxy-watch6-classic-sm-l955-sm-l955fzsaser-thumb-537236512?wid=400',
+    image: '/img/products/galaxy-watch6-classic-47mm.png',
     description: 'Классические умные часы Samsung с вращающимся безелем, Wear OS и BioActive-датчиком.',
     brand: 'Samsung'
   }, [
@@ -574,7 +574,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['tvs'],
     price: 199990,
     old_price: 229990,
-    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/QE65S95CAUXRU/gallery/ru-oled-s95c-qe65s95cauxru-thumb-537236876?wid=400',
+    image: '/img/products/samsung-s95c-65-oled.png',
     description: 'OLED-телевизор Samsung 65" с квантовыми точками, Neural Quantum 4K и 144 Гц.',
     brand: 'Samsung'
   }, [
@@ -600,7 +600,7 @@ const addAll = db.transaction(() => {
     category_id: catIds['tvs'],
     price: 129990,
     old_price: 149990,
-    image: 'https://www.lg.com/content/dam/channel/wcms/ru/tvs/oled55c3rla/gallery/OLED55C3_A.jpg?wid=400',
+    image: '/img/products/lg-oled55c3-55.png',
     description: 'OLED-телевизор LG 55" с процессором a9 Gen 6 AI, Dolby Vision IQ и webOS 23.',
     brand: 'LG'
   }, [

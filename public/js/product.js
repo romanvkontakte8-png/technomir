@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const specsSection = document.getElementById('specsSection');
 
   try {
-    const res = await fetch('/api/products/' + productId);
+    const res = await fetch('/data/product-' + productId + '.json');
     if (!res.ok) throw new Error('Товар не найден');
     const product = await res.json();
 

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* Загрузка категорий */
   try {
-    const cats = await fetch('/api/categories').then(r => r.json());
+    const cats = await fetch('/data/categories.json').then(r => r.json());
     for (const cat of cats) {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -39,14 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* Загрузка товаров */
   loading.style.display = 'block';
   try {
-    let url = '/api/products?';
-    if (categoryId) url += 'category_id=' + categoryId + '&';
     if (searchQuery) {
-      url += 'search=' + encodeURIComponent(searchQuery) + '&';
       pageTitle.textContent = 'Результаты поиска: «' + searchQuery + '»';
     }
 
-    const products = await fetch(url).then(r => r.json());
+    let products = await fetch('/data/products.json').then(r => r.json());
+    if (categoryId) products = products.filter(p => String(p.category_id) === categoryId);
+    if (searchQuery) products = products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     loading.style.display = 'none';
 
     if (products.length === 0) {

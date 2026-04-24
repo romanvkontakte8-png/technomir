@@ -28,14 +28,38 @@ async function loadComparison(ids) {
   emptyState.style.display = 'none';
 
   try {
-    const res = await fetch('/api/compare', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids })
-    });
+    const serverMode = await API.check();
+    let data;
 
-    if (!res.ok) throw new Error('Ошибка загрузки');
-    const data = await res.json();
+    if (serverMode) {
+      const res = await fetch('/api/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids })
+      });
+      if (!res.ok) throw new Error('Ошибка загрузки');
+      data = await res.json();
+    } else {
+      const promises = ids.map(id => fetch('/data/product-' + id + '.json').then(r => r.json()));
+      const products = await Promise.all(promises);
+      const groupMap = {};
+      for (const p of products) {
+        if (!p.specs) continue;
+        for (const s of p.specs) {
+          if (!groupMap[s.spec_group]) groupMap[s.spec_group] = {};
+          if (!groupMap[s.spec_group][s.spec_name]) groupMap[s.spec_group][s.spec_name] = {};
+          groupMap[s.spec_group][s.spec_name][p.id] = s.spec_value;
+        }
+      }
+      const specGroups = Object.entries(groupMap).map(([group, specs]) => ({
+        group,
+        rows: Object.entries(specs).map(([name, values]) => {
+          const vals = Object.values(values);
+          return { name, values, different: vals.length > 1 && !vals.every(v => v === vals[0]) };
+        })
+      }));
+      data = { products, specGroups };
+    }
 
     if (data.products.length === 0) {
       loading.style.display = 'none';

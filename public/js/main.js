@@ -2,6 +2,26 @@
    main.js — общие функции ТехноМир
    ═══════════════════════════════════════════════════ */
 
+/* ── API: серверный режим или статический ── */
+const API = {
+  _serverMode: null,
+
+  async check() {
+    if (this._serverMode !== null) return this._serverMode;
+    try {
+      const res = await fetch('/api/categories', { signal: AbortSignal.timeout(2000) });
+      this._serverMode = res.ok;
+    } catch { this._serverMode = false; }
+    return this._serverMode;
+  },
+
+  async get(apiPath, staticPath) {
+    const server = await this.check();
+    const url = server ? apiPath : staticPath;
+    return fetch(url).then(r => r.json());
+  }
+};
+
 /* ── Авторизация ── */
 const Auth = {
   TOKEN_KEY: 'technomir_token',

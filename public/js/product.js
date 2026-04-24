@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const specsSection = document.getElementById('specsSection');
 
   try {
-    const res = await fetch('/api/products/' + productId);
-    if (!res.ok) throw new Error('Товар не найден');
-    const product = await res.json();
+    const product = await API.get('/api/products/' + productId, '/data/product-' + productId + '.json');
 
     document.title = product.name + ' — ТехноМир';
 

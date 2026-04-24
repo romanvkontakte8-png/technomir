@@ -1,0 +1,6 @@
+node_modules/
+db/technomir.db
+db/technomir.db-wal
+db/technomir.db-shm
+.DS_Store
+*.log

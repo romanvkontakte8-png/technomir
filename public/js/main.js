@@ -10,7 +10,8 @@ const API = {
     if (this._serverMode !== null) return this._serverMode;
     try {
       const res = await fetch('/api/categories', { signal: AbortSignal.timeout(2000) });
-      this._serverMode = res.ok;
+      const ct = res.headers.get('content-type') || '';
+      this._serverMode = res.ok && ct.includes('json');
     } catch { this._serverMode = false; }
     return this._serverMode;
   },

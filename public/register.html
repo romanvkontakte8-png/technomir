@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Регистрация — ТехноМир</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="header">
   <div class="container header__inner">
-    <a href="/" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo__icon">TM</span>
       <span class="logo__text">ТехноМир</span>
     </a>
     <div class="header__actions">
       <button class="theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
-      <div class="header__auth" id="authBlock"><a href="/login.html">Войти</a></div>
+      <div class="header__auth" id="authBlock"><a href="login.html">Войти</a></div>
     </div>
   </div>
 </header>
@@ -45,7 +45,7 @@
         <div class="form-error" id="formError" style="display:none"></div>
         <button type="submit" class="btn btn--primary btn--full">Зарегистрироваться</button>
       </form>
-      <p class="auth-form__link">Уже есть аккаунт? <a href="/login.html">Войти</a></p>
+      <p class="auth-form__link">Уже есть аккаунт? <a href="login.html">Войти</a></p>
     </div>
   </div>
 </main>
@@ -60,7 +60,8 @@
   </div>
 </footer>
 
-<script src="/js/main.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
 <script>
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
   e.preventDefault();

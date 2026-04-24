@@ -13,7 +13,7 @@ let allOrders = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
-    window.location.href = '/login.html';
+    window.location.href = 'login.html';
     return;
   }
 

@@ -84,7 +84,7 @@ async function loadComparison(ids) {
       if (!res.ok) throw new Error('Ошибка загрузки');
       data = await res.json();
     } else {
-      const promises = ids.map(id => fetch('/data/product-' + id + '.json').then(r => r.json()));
+      const promises = ids.map(id => API.get('/api/products/' + id, 'data/product-' + id + '.json'));
       const products = await Promise.all(promises);
       const groupMap = {};
       for (const p of products) {
@@ -142,7 +142,7 @@ function renderCompareTable(data) {
           <img src="${p.image || ''}" alt="${p.name}"
                onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22><rect fill=%22%23f0f0f0%22 width=%22120%22 height=%22120%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2212%22>Нет фото</text></svg>'">
           <div class="compare-product-cell__name">
-            <a href="/product.html?id=${p.id}">${p.name}</a>
+            <a href="product.html?id=${p.id}">${p.name}</a>
           </div>
           <div class="compare-product-cell__price">${formatPrice(p.price)}</div>
           <button class="compare-product-cell__remove" data-id="${p.id}">Убрать</button>

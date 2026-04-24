@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мой аккаунт — ТехноМир</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="header">
   <div class="container header__inner">
-    <a href="/" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo__icon">TM</span>
       <span class="logo__text">ТехноМир</span>
     </a>
@@ -19,7 +19,7 @@
       <button class="search-bar__btn" id="searchBtn">Найти</button>
     </div>
     <div class="header__actions">
-      <a href="/cart.html" class="header__cart" id="cartLink">
+      <a href="cart.html" class="header__cart" id="cartLink">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
@@ -27,7 +27,7 @@
         <span>Корзина</span>
         <span class="badge" id="cartBadge" style="display:none">0</span>
       </a>
-      <a href="/compare.html" class="header__compare" id="compareLink">
+      <a href="compare.html" class="header__compare" id="compareLink">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
         </svg>
@@ -35,7 +35,7 @@
         <span class="badge" id="compareBadge">0</span>
       </a>
       <button class="theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
-      <div class="header__auth" id="authBlock"><a href="/login.html">Войти</a></div>
+      <div class="header__auth" id="authBlock"><a href="login.html">Войти</a></div>
     </div>
   </div>
 </header>
@@ -93,7 +93,7 @@
     <div class="loading" id="loading">Загрузка...</div>
     <div id="ordersEmpty" class="empty-state" style="display:none;">
       <p>У вас пока нет заказов</p>
-      <a href="/" class="btn btn--primary">Перейти в каталог</a>
+      <a href="index.html" class="btn btn--primary">Перейти в каталог</a>
     </div>
     <div id="ordersList"></div>
   </div>
@@ -109,7 +109,8 @@
   </div>
 </footer>
 
-<script src="/js/main.js"></script>
-<script src="/js/account.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/account.js"></script>
 </body>
 </html>

@@ -15,11 +15,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* Загрузка категорий */
   try {
-    const cats = await API.get('/api/categories', '/data/categories.json');
+    const cats = await API.get('/api/categories', 'data/categories.json');
     for (const cat of cats) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = '/?category=' + cat.id;
+      a.href = 'index.html?category=' + cat.id;
       a.className = 'categories-nav__link';
       a.textContent = cat.name;
       a.dataset.category = cat.id;
@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (searchQuery) url += 'search=' + encodeURIComponent(searchQuery) + '&';
       products = await fetch(url).then(r => r.json());
     } else {
-      products = await fetch('/data/products.json').then(r => r.json());
+      try { products = await fetch('data/products.json').then(r => r.json()); }
+      catch { products = (typeof STATIC_DATA !== 'undefined') ? STATIC_DATA.products : []; }
       if (categoryId) products = products.filter(p => String(p.category_id) === categoryId);
       if (searchQuery) products = products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
@@ -80,7 +81,7 @@ function createProductCard(product) {
   card.innerHTML = `
     <div class="product-card__img-wrap">
       <img class="product-card__img"
-           src="${product.image || '/img/placeholder.png'}"
+           src="${product.image || 'img/placeholder.png'}"
            alt="${product.name}"
            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2214%22>Нет фото</text></svg>'">
       <button class="product-card__compare-btn ${isInCompare ? 'active' : ''}"
@@ -93,7 +94,7 @@ function createProductCard(product) {
     <div class="product-card__body">
       <div class="product-card__category">${product.category_name || ''}</div>
       <div class="product-card__title">
-        <a href="/product.html?id=${product.id}">${product.name}</a>
+        <a href="product.html?id=${product.id}">${product.name}</a>
       </div>
       <div class="product-card__price-block">
         <span class="product-card__price">${formatPrice(product.price)}</span>

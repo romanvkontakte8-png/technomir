@@ -29,7 +29,7 @@ async function loadBalance() {
         if (data.balance < total) {
           const need = total - data.balance;
           el.innerHTML += `<br><span style="color:var(--danger)">Не хватает ${formatPrice(need)}</span>`;
-          el.innerHTML += `<br><a href="/account.html" class="btn btn--primary btn--sm" style="margin-top:8px">Пополнить баланс</a>`;
+          el.innerHTML += `<br><a href="account.html" class="btn btn--primary btn--sm" style="margin-top:8px">Пополнить баланс</a>`;
         }
       }
     }
@@ -119,7 +119,7 @@ async function placeOrder(e) {
     const data = await res.json();
     if (!res.ok) {
       if (data.error === 'Недостаточно средств') {
-        errEl.innerHTML = `${data.error}. Нужно: ${formatPrice(data.need)}, баланс: ${formatPrice(data.balance)}. <a href="/account.html">Пополнить</a>`;
+        errEl.innerHTML = `${data.error}. Нужно: ${formatPrice(data.need)}, баланс: ${formatPrice(data.balance)}. <a href="account.html">Пополнить</a>`;
       } else {
         errEl.textContent = data.error;
       }

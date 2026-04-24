@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const productId = params.get('id');
 
   if (!productId) {
-    window.location.href = '/';
+    window.location.href = 'index.html';
     return;
   }
 
@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const specsSection = document.getElementById('specsSection');
 
   try {
-    const product = await API.get('/api/products/' + productId, '/data/product-' + productId + '.json');
+    const product = await API.get('/api/products/' + productId, 'data/product-' + productId + '.json');
 
     document.title = product.name + ' — ТехноМир';
 
     /* Хлебные крошки */
     document.getElementById('breadcrumbCategory').innerHTML =
-      `<a href="/?category=${product.category_id}">${product.category_name || 'Каталог'}</a>`;
+      `<a href="index.html?category=${product.category_id}">${product.category_name || 'Каталог'}</a>`;
     document.getElementById('breadcrumbProduct').textContent = product.name;
 
     /* Основная информация */

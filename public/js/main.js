@@ -2,12 +2,17 @@
    main.js — общие функции ТехноМир
    ═══════════════════════════════════════════════════ */
 
-/* ── API: серверный режим или статический ── */
+/* ── API: серверный режим, fetch или встроенные данные ── */
 const API = {
   _serverMode: null,
 
+  isFileProtocol() {
+    return window.location.protocol === 'file:';
+  },
+
   async check() {
     if (this._serverMode !== null) return this._serverMode;
+    if (this.isFileProtocol()) { this._serverMode = false; return false; }
     try {
       const res = await fetch('/api/categories', { signal: AbortSignal.timeout(2000) });
       const ct = res.headers.get('content-type') || '';
@@ -18,8 +23,22 @@ const API = {
 
   async get(apiPath, staticPath) {
     const server = await this.check();
-    const url = server ? apiPath : staticPath;
-    return fetch(url).then(r => r.json());
+    if (server) return fetch(apiPath).then(r => r.json());
+    /* Пробуем fetch (работает на http), иначе встроенные данные */
+    try {
+      return await fetch(staticPath).then(r => r.json());
+    } catch {
+      return this._getEmbedded(staticPath);
+    }
+  },
+
+  _getEmbedded(path) {
+    if (typeof STATIC_DATA === 'undefined') return [];
+    if (path.includes('categories')) return STATIC_DATA.categories;
+    if (path.includes('products.json')) return STATIC_DATA.products;
+    const m = path.match(/product-(\d+)\.json/);
+    if (m) return STATIC_DATA.details[m[1]] || null;
+    return [];
   }
 };
 
@@ -72,7 +91,7 @@ const Auth = {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     Cart.clear();
-    window.location.href = '/';
+    window.location.href = 'index.html';
   },
 
   isLoggedIn() { return !!this.getToken(); },
@@ -209,7 +228,7 @@ function initSearch() {
   function doSearch() {
     const q = input.value.trim();
     if (q) {
-      window.location.href = '/?search=' + encodeURIComponent(q);
+      window.location.href = 'index.html?search=' + encodeURIComponent(q);
     }
   }
 
@@ -229,12 +248,12 @@ function updateAuthUI() {
     const balanceStr = typeof user.balance === 'number' ? formatPrice(user.balance) : '';
     let links = '';
     if (balanceStr) links += `<span class="header__balance" title="Баланс">${balanceStr}</span>`;
-    links += `<a href="/account.html">${user.name}</a>`;
-    if (Auth.isAdmin()) links += ` <a href="/admin.html" class="header__admin-link">Админ</a>`;
+    links += `<a href="account.html">${user.name}</a>`;
+    if (Auth.isAdmin()) links += ` <a href="admin.html" class="header__admin-link">Админ</a>`;
     links += ` <a href="#" onclick="Auth.logout();return false;" class="header__logout">Выйти</a>`;
     authBlock.innerHTML = links;
   } else {
-    authBlock.innerHTML = '<a href="/login.html">Войти</a>';
+    authBlock.innerHTML = '<a href="login.html">Войти</a>';
   }
 }
 

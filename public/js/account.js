@@ -10,7 +10,7 @@ const STATUS_LABELS = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!Auth.isLoggedIn()) { window.location.href = '/login.html'; return; }
+  if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
   await loadProfile();
   initProfileEdit();

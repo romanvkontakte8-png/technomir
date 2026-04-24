@@ -51,7 +51,7 @@ function authMiddleware(req, res, next) {
   const token = header && header.startsWith('Bearer ') ? header.slice(7) : null;
   const data = verifyToken(token);
   if (!data) return res.status(401).json({ error: 'Необходима авторизация' });
-  req.user = db.prepare('SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?').get(data.id);
+  req.user = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(data.id);
   if (!req.user) return res.status(401).json({ error: 'Пользователь не найден' });
   next();
 }
@@ -204,6 +204,51 @@ app.get('/api/auth/me', authMiddleware, (req, res) => {
   res.json(req.user);
 });
 
+/* ───────── API: Баланс ───────── */
+
+app.get('/api/balance', authMiddleware, (req, res) => {
+  const user = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);
+  res.json({ balance: user.balance });
+});
+
+app.post('/api/balance/topup', authMiddleware, (req, res) => {
+  const { amount } = req.body;
+  const val = parseInt(amount);
+  if (!val || val <= 0) return res.status(400).json({ error: 'Укажите положительную сумму' });
+
+  db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(val, req.user.id);
+  const user = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);
+  res.json({ balance: user.balance });
+});
+
+/* ───────── API: Профиль ───────── */
+
+app.put('/api/profile', authMiddleware, (req, res) => {
+  const { name, phone, password } = req.body;
+  if (name) db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
+  if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone, req.user.id);
+  if (password && password.length >= 4) db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), req.user.id);
+
+  const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(req.user.id);
+  res.json(updated);
+});
+
+app.put('/api/admin/users/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const { name, email, phone, role, balance, password } = req.body;
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+  if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+
+  if (name) db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, user.id);
+  if (email) db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, user.id);
+  if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone, user.id);
+  if (role && ['client', 'admin'].includes(role)) db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, user.id);
+  if (balance !== undefined) db.prepare('UPDATE users SET balance = ? WHERE id = ?').run(parseInt(balance) || 0, user.id);
+  if (password && password.length >= 4) db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), user.id);
+
+  const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(user.id);
+  res.json(updated);
+});
+
 /* ───────── API: Заказы (клиент) ───────── */
 
 app.post('/api/orders', authMiddleware, (req, res) => {
@@ -222,6 +267,13 @@ app.post('/api/orders', authMiddleware, (req, res) => {
     validated.push({ product_id: product.id, price: product.price, quantity: qty });
   }
 
+  const currentUser = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);
+  if (currentUser.balance < total) {
+    return res.status(400).json({ error: 'Недостаточно средств', need: total, balance: currentUser.balance });
+  }
+
+  db.prepare('UPDATE users SET balance = balance - ? WHERE id = ?').run(total, req.user.id);
+
   const orderInfo = db.prepare('INSERT INTO orders (user_id, status, total, address, comment) VALUES (?, ?, ?, ?, ?)')
     .run(req.user.id, 'new', total, address || '', comment || '');
 
@@ -230,7 +282,8 @@ app.post('/api/orders', authMiddleware, (req, res) => {
     insertItem.run(orderInfo.lastInsertRowid, v.product_id, v.quantity, v.price);
   }
 
-  res.json({ order_id: orderInfo.lastInsertRowid, status: 'new', total });
+  const newBalance = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id).balance;
+  res.json({ order_id: orderInfo.lastInsertRowid, status: 'new', total, balance: newBalance });
 });
 
 app.get('/api/orders', authMiddleware, (req, res) => {
@@ -250,13 +303,14 @@ app.put('/api/orders/:id/cancel', authMiddleware, (req, res) => {
   if (order.status !== 'new') return res.status(400).json({ error: 'Можно отменить только новые заказы' });
 
   db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('cancelled', order.id);
+  db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(order.total, req.user.id);
   res.json({ success: true });
 });
 
 /* ───────── API: Админ-панель ───────── */
 
 app.get('/api/admin/users', authMiddleware, adminMiddleware, (req, res) => {
-  const users = db.prepare('SELECT id, name, email, phone, role, created_at FROM users ORDER BY id').all();
+  const users = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users ORDER BY id').all();
   for (const u of users) {
     u.order_count = db.prepare('SELECT COUNT(*) as c FROM orders WHERE user_id = ?').get(u.id).c;
     u.total_spent = db.prepare('SELECT COALESCE(SUM(total),0) as s FROM orders WHERE user_id = ? AND status != ?').get(u.id, 'cancelled').s;

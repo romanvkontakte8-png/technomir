@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (Auth.isLoggedIn()) {
     document.getElementById('checkoutForm').style.display = 'block';
     document.getElementById('needAuth').style.display = 'none';
+    loadBalance();
   } else {
     document.getElementById('checkoutForm').style.display = 'none';
     document.getElementById('needAuth').style.display = 'block';
@@ -15,6 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('checkoutForm').addEventListener('submit', placeOrder);
 });
+
+async function loadBalance() {
+  try {
+    const res = await fetch('/api/balance', { headers: Auth.headers() });
+    if (res.ok) {
+      const data = await res.json();
+      const el = document.getElementById('balanceInfo');
+      if (el) {
+        el.innerHTML = `Ваш баланс: <strong>${formatPrice(data.balance)}</strong>`;
+        const total = Cart.total();
+        if (data.balance < total) {
+          const need = total - data.balance;
+          el.innerHTML += `<br><span style="color:var(--danger)">Не хватает ${formatPrice(need)}</span>`;
+          el.innerHTML += `<br><a href="/account.html" class="btn btn--primary btn--sm" style="margin-top:8px">Пополнить баланс</a>`;
+        }
+      }
+    }
+  } catch {}
+}
 
 function renderCart() {
   const items = Cart.get();
@@ -56,6 +76,8 @@ function renderCart() {
 
   totalEl.textContent = formatPrice(Cart.total());
 
+  if (Auth.isLoggedIn()) loadBalance();
+
   itemsEl.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = Number(btn.dataset.id);
@@ -96,7 +118,11 @@ async function placeOrder(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      errEl.textContent = data.error;
+      if (data.error === 'Недостаточно средств') {
+        errEl.innerHTML = `${data.error}. Нужно: ${formatPrice(data.need)}, баланс: ${formatPrice(data.balance)}. <a href="/account.html">Пополнить</a>`;
+      } else {
+        errEl.textContent = data.error;
+      }
       errEl.style.display = 'block';
       return;
     }
@@ -106,6 +132,9 @@ async function placeOrder(e) {
     document.getElementById('orderSuccess').style.display = 'block';
     document.getElementById('orderNumber').textContent = '#' + data.order_id;
     document.getElementById('orderTotal').textContent = formatPrice(data.total);
+
+    const user = Auth.getUser();
+    if (user) { user.balance = data.balance; Auth.updateUser(user); updateAuthUI(); }
   } catch (err) {
     errEl.textContent = 'Ошибка сервера';
     errEl.style.display = 'block';

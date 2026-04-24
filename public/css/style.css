@@ -664,6 +664,169 @@ img { max-width: 100%; height: auto; }
 }
 .admin-table tr:hover { background: rgba(99,102,241,.04); }
 
+/* ── Светлая тема ── */
+
+[data-theme="light"] {
+  --bg: #f1f5f9;
+  --bg-light: #e2e8f0;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --text: #1e293b;
+  --text-light: #475569;
+  --text-muted: #64748b;
+  --border: #cbd5e1;
+  --shadow: 0 4px 24px rgba(0,0,0,.08);
+  --shadow-glow: 0 0 30px rgba(99,102,241,.1);
+  --diff-bg: rgba(245,158,11,.08);
+}
+[data-theme="light"] .header {
+  background: rgba(255,255,255,.85);
+  border-bottom-color: rgba(99,102,241,.15);
+}
+[data-theme="light"] .logo__icon { color: #fff; }
+[data-theme="light"] .search-bar__input {
+  background: #e2e8f0; color: #1e293b; border-color: #cbd5e1;
+}
+[data-theme="light"] .search-bar__input::placeholder { color: #94a3b8; }
+[data-theme="light"] .categories-nav {
+  background: #e2e8f0; border-color: #cbd5e1;
+}
+[data-theme="light"] .categories-nav__link { color: #475569; }
+[data-theme="light"] .categories-nav__link:hover,
+[data-theme="light"] .categories-nav__link.active { color: #fff; }
+[data-theme="light"] .footer { background: #1e293b; color: #f1f5f9; }
+[data-theme="light"] .footer a { color: #94a3b8; }
+[data-theme="light"] .product-card__img-wrap { background: #f8fafc; }
+[data-theme="light"] .product-card__price { color: #4f46e5 !important; }
+[data-theme="light"] .product-card__old-price { color: #94a3b8 !important; }
+[data-theme="light"] .product-page__price { color: #4f46e5 !important; }
+[data-theme="light"] .compare-table th,
+[data-theme="light"] .compare-table td {
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .admin-table td,
+[data-theme="light"] .admin-table th { border-color: #e2e8f0; }
+[data-theme="light"] .admin-table th { background: #e2e8f0; }
+[data-theme="light"] .modal { background: #fff; color: #1e293b; }
+[data-theme="light"] .form-input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
+}
+
+/* ── Переключатель темы ── */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--primary);
+  background: rgba(99,102,241,.1);
+}
+
+/* ── Баланс в хедере ── */
+.header__balance {
+  font-weight: 600;
+  color: var(--success);
+  font-size: .9rem;
+  white-space: nowrap;
+}
+
+/* ── Аккаунт: грид и карточки ── */
+.account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+.account-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.account-card h2 {
+  margin-bottom: 16px;
+  background: var(--gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Баланс ── */
+.balance-display {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+.balance-info {
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(99,102,241,.06);
+  border-radius: 8px;
+  font-size: .95rem;
+}
+
+/* ── Пополнение ── */
+.topup-presets {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+}
+.topup-btn {
+  padding: 8px 16px;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: .9rem;
+  transition: var(--transition);
+}
+.topup-btn:hover {
+  border-color: var(--primary);
+  background: rgba(99,102,241,.15);
+  color: var(--primary-light);
+}
+.topup-custom {
+  display: flex; gap: 8px; align-items: center;
+}
+.topup-custom input { flex: 1; }
+
+/* ── Модальное окно ── */
+.modal-overlay {
+  display: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 500px; width: 90%;
+  max-height: 80vh; overflow-y: auto;
+}
+.modal h2 {
+  margin-bottom: 20px;
+  background: var(--gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.modal-actions {
+  display: flex; gap: 12px; margin-top: 20px;
+}
+
 /* ── Адаптивность ── */
 
 @media (max-width: 900px) {
@@ -678,6 +841,7 @@ img { max-width: 100%; height: auto; }
   .logo__text { font-size: 1.1rem; }
   .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
   .page-title { font-size: 1.4rem; }
+  .account-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {

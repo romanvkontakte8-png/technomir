@@ -34,6 +34,7 @@
         <span>Сравнение</span>
         <span class="badge" id="compareBadge">0</span>
       </a>
+      <button class="theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
       <div class="header__auth" id="authBlock"><a href="/login.html">Войти</a></div>
     </div>
   </div>
@@ -43,9 +44,52 @@
   <div class="container">
     <h1 class="page-title">Личный кабинет</h1>
 
-    <div class="account-info" id="accountInfo"></div>
+    <div class="account-grid">
+      <!-- Профиль -->
+      <div class="account-card">
+        <h2>Профиль</h2>
+        <div id="profileView"></div>
+        <button class="btn btn--outline" id="editProfileBtn" style="margin-top:12px">Редактировать профиль</button>
+        <div id="profileForm" style="display:none;margin-top:12px;">
+          <div class="form-group">
+            <label>Имя</label>
+            <input type="text" id="profName" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" id="profPhone" class="form-input" placeholder="+7 (999) 999-99-99">
+          </div>
+          <div class="form-group">
+            <label>Новый пароль (оставьте пустым, если не менять)</label>
+            <input type="password" id="profPassword" class="form-input" placeholder="Новый пароль">
+          </div>
+          <button class="btn btn--primary" id="saveProfileBtn">Сохранить</button>
+          <button class="btn btn--outline" id="cancelProfileBtn">Отмена</button>
+        </div>
+      </div>
 
-    <h2>Мои заказы</h2>
+      <!-- Баланс -->
+      <div class="account-card">
+        <h2>Баланс</h2>
+        <div class="balance-display" id="balanceDisplay">0 &#8381;</div>
+        <div class="topup-section">
+          <div class="topup-presets" id="topupPresets">
+            <button class="topup-btn" data-amount="1000">1 000 &#8381;</button>
+            <button class="topup-btn" data-amount="5000">5 000 &#8381;</button>
+            <button class="topup-btn" data-amount="10000">10 000 &#8381;</button>
+            <button class="topup-btn" data-amount="50000">50 000 &#8381;</button>
+            <button class="topup-btn" data-amount="100000">100 000 &#8381;</button>
+            <button class="topup-btn" data-amount="500000">500 000 &#8381;</button>
+          </div>
+          <div class="topup-custom">
+            <input type="number" id="topupAmount" class="form-input" placeholder="Своя сумма" min="1">
+            <button class="btn btn--primary" id="topupBtn">Пополнить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:32px;">Мои заказы</h2>
     <div class="loading" id="loading">Загрузка...</div>
     <div id="ordersEmpty" class="empty-state" style="display:none;">
       <p>У вас пока нет заказов</p>

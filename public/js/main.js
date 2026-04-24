@@ -23,6 +23,34 @@ const API = {
   }
 };
 
+/* ── Тема (тёмная/светлая) ── */
+const Theme = {
+  KEY: 'technomir_theme',
+
+  get() { return localStorage.getItem(this.KEY) || 'dark'; },
+
+  set(theme) {
+    localStorage.setItem(this.KEY, theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  },
+
+  toggle() {
+    this.set(this.get() === 'dark' ? 'light' : 'dark');
+  },
+
+  init() {
+    const theme = this.get();
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+      btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      btn.addEventListener('click', () => this.toggle());
+    }
+  }
+};
+
 /* ── Авторизация ── */
 const Auth = {
   TOKEN_KEY: 'technomir_token',
@@ -33,6 +61,10 @@ const Auth = {
 
   login(token, user) {
     localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  },
+
+  updateUser(user) {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   },
 
@@ -194,7 +226,10 @@ function updateAuthUI() {
   if (!authBlock) return;
   if (Auth.isLoggedIn()) {
     const user = Auth.getUser();
-    let links = `<a href="/account.html">${user.name}</a>`;
+    const balanceStr = typeof user.balance === 'number' ? formatPrice(user.balance) : '';
+    let links = '';
+    if (balanceStr) links += `<span class="header__balance" title="Баланс">${balanceStr}</span>`;
+    links += `<a href="/account.html">${user.name}</a>`;
     if (Auth.isAdmin()) links += ` <a href="/admin.html" class="header__admin-link">Админ</a>`;
     links += ` <a href="#" onclick="Auth.logout();return false;" class="header__logout">Выйти</a>`;
     authBlock.innerHTML = links;
@@ -205,6 +240,7 @@ function updateAuthUI() {
 
 /* Инициализация */
 document.addEventListener('DOMContentLoaded', () => {
+  Theme.init();
   CompareList.updateBadge();
   Cart.updateBadge();
   updateAuthUI();

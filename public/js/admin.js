@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  /* Табы */
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -132,7 +131,7 @@ async function loadUsers() {
         <thead>
           <tr>
             <th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th>
-            <th>Роль</th><th>Заказов</th><th>Сумма покупок</th><th>Дата регистрации</th>
+            <th>Роль</th><th>Баланс</th><th>Заказов</th><th>Сумма покупок</th><th>Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -145,16 +144,88 @@ async function loadUsers() {
           <td>${u.email}</td>
           <td>${u.phone || '—'}</td>
           <td><span class="role-badge role--${u.role}">${u.role === 'admin' ? 'Админ' : 'Клиент'}</span></td>
+          <td>${formatPrice(u.balance || 0)}</td>
           <td>${u.order_count}</td>
           <td>${formatPrice(u.total_spent)}</td>
-          <td>${new Date(u.created_at).toLocaleDateString('ru-RU')}</td>
+          <td><button class="btn btn--sm btn--outline edit-user-btn" data-id="${u.id}" data-name="${u.name}" data-email="${u.email}" data-phone="${u.phone || ''}" data-role="${u.role}" data-balance="${u.balance || 0}">Редактировать</button></td>
         </tr>
       `;
     }
     html += '</tbody></table>';
     listEl.innerHTML = html;
 
+    listEl.querySelectorAll('.edit-user-btn').forEach(btn => {
+      btn.addEventListener('click', () => openEditModal(btn.dataset));
+    });
+
   } catch (e) {
     loading.textContent = 'Ошибка загрузки';
   }
+}
+
+function openEditModal(data) {
+  let modal = document.getElementById('editUserModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'editUserModal';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal">
+        <h2>Редактирование пользователя</h2>
+        <div class="form-group"><label>Имя</label><input type="text" id="editName" class="form-input"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="editEmail" class="form-input"></div>
+        <div class="form-group"><label>Телефон</label><input type="text" id="editPhone" class="form-input"></div>
+        <div class="form-group"><label>Роль</label>
+          <select id="editRole" class="form-input">
+            <option value="client">Клиент</option>
+            <option value="admin">Администратор</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Баланс</label><input type="number" id="editBalance" class="form-input" min="0"></div>
+        <div class="form-group"><label>Новый пароль (оставьте пустым)</label><input type="password" id="editPassword" class="form-input"></div>
+        <div class="modal-actions">
+          <button class="btn btn--primary" id="saveUserBtn">Сохранить</button>
+          <button class="btn btn--outline" id="closeModalBtn">Отмена</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('editName').value = data.name;
+  document.getElementById('editEmail').value = data.email;
+  document.getElementById('editPhone').value = data.phone;
+  document.getElementById('editRole').value = data.role;
+  document.getElementById('editBalance').value = data.balance;
+  document.getElementById('editPassword').value = '';
+  modal.style.display = 'flex';
+  modal.dataset.userId = data.id;
+
+  document.getElementById('closeModalBtn').onclick = () => modal.style.display = 'none';
+  document.getElementById('saveUserBtn').onclick = () => saveUser(data.id);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+}
+
+async function saveUser(userId) {
+  const body = {
+    name: document.getElementById('editName').value.trim(),
+    email: document.getElementById('editEmail').value.trim(),
+    phone: document.getElementById('editPhone').value.trim(),
+    role: document.getElementById('editRole').value,
+    balance: parseInt(document.getElementById('editBalance').value) || 0
+  };
+  const pw = document.getElementById('editPassword').value;
+  if (pw) body.password = pw;
+
+  try {
+    const res = await fetch('/api/admin/users/' + userId, {
+      method: 'PUT',
+      headers: Auth.headers(),
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
+    document.getElementById('editUserModal').style.display = 'none';
+    showToast('Пользователь обновлён');
+    loadUsers();
+  } catch { showToast('Ошибка сохранения'); }
 }

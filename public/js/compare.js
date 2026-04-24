@@ -2,6 +2,50 @@
    compare.js — страница сравнения товаров ТехноМир
    ═══════════════════════════════════════════════════ */
 
+/* Спеки где МЕНЬШЕ = лучше */
+const LOWER_IS_BETTER = ['вес', 'вес наушника', 'цена'];
+
+/* Извлечь число из строки: "12 Мп" → 12, "4 676 мА·ч" → 4676, "6.7\"" → 6.7 */
+function extractNumber(str) {
+  if (!str || str === '—') return null;
+  const cleaned = str.replace(/\s/g, '').replace(',', '.');
+  const m = cleaned.match(/([\d.]+)/);
+  return m ? parseFloat(m[1]) : null;
+}
+
+/* Определить рейтинг значений: кто лучше, кто хуже */
+function rankValues(specName, valuesMap, productIds) {
+  const nums = {};
+  let allNumeric = true;
+  let hasAny = false;
+
+  for (const pid of productIds) {
+    const v = valuesMap[pid];
+    if (!v || v === '—') { allNumeric = false; continue; }
+    const n = extractNumber(v);
+    if (n === null) { allNumeric = false; }
+    else { nums[pid] = n; hasAny = true; }
+  }
+
+  if (!hasAny || !allNumeric || Object.keys(nums).length < 2) return {};
+
+  const values = Object.values(nums);
+  const allSame = values.every(v => v === values[0]);
+  if (allSame) return {};
+
+  const lowerBetter = LOWER_IS_BETTER.some(s => specName.toLowerCase().includes(s));
+  const best = lowerBetter ? Math.min(...values) : Math.max(...values);
+  const worst = lowerBetter ? Math.max(...values) : Math.min(...values);
+
+  const result = {};
+  for (const [pid, n] of Object.entries(nums)) {
+    if (n === best) result[pid] = 'best';
+    else if (n === worst) result[pid] = 'worst';
+    else result[pid] = 'mid';
+  }
+  return result;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const ids = CompareList.get();
   if (ids.length === 0) return;
@@ -83,6 +127,11 @@ function renderCompareTable(data) {
   const { products, specGroups } = data;
   const thead = document.getElementById('compareHead');
   const tbody = document.getElementById('compareBody');
+  const productIds = products.map(p => p.id);
+
+  /* Подсчёт очков для итоговой оценки */
+  const scores = {};
+  for (const p of products) scores[p.id] = { wins: 0, losses: 0 };
 
   /* Шапка: товары */
   let headRow = '<tr><th></th>';
@@ -116,24 +165,73 @@ function renderCompareTable(data) {
     });
   });
 
+  /* Рейтинг цены */
+  const priceMap = {};
+  for (const p of products) priceMap[p.id] = String(p.price);
+  const priceRank = rankValues('цена', priceMap, productIds);
+
   /* Тело: характеристики */
   let bodyHTML = '';
+
+  /* Строка цены */
+  bodyHTML += '<tr class="compare-price-row" data-different="true">';
+  bodyHTML += '<td>Цена</td>';
+  for (const p of products) {
+    const rank = priceRank[p.id] || '';
+    const cls = rank === 'best' ? 'cmp-best' : rank === 'worst' ? 'cmp-worst' : '';
+    const icon = rank === 'best' ? '<span class="cmp-icon cmp-icon--best" title="Лучшая цена">&#9650;</span>' : rank === 'worst' ? '<span class="cmp-icon cmp-icon--worst" title="Выше цена">&#9660;</span>' : '';
+    bodyHTML += `<td class="${cls}">${icon} ${formatPrice(p.price)}</td>`;
+    if (rank === 'best') scores[p.id].wins++;
+    if (rank === 'worst') scores[p.id].losses++;
+  }
+  bodyHTML += '</tr>';
 
   for (const group of specGroups) {
     bodyHTML += `<tr class="compare-group-row"><td colspan="${products.length + 1}">${group.group}</td></tr>`;
 
     for (const row of group.rows) {
       const diffClass = row.different ? 'compare-diff' : '';
+      const ranks = row.different ? rankValues(row.name, row.values, productIds) : {};
+
       bodyHTML += `<tr class="${diffClass}" data-different="${row.different}">`;
       bodyHTML += `<td>${row.name}</td>`;
+
       for (const p of products) {
-        bodyHTML += `<td>${row.values[p.id] || '—'}</td>`;
+        const val = row.values[p.id] || '—';
+        const rank = ranks[p.id] || '';
+        const cls = rank === 'best' ? 'cmp-best' : rank === 'worst' ? 'cmp-worst' : '';
+        const icon = rank === 'best' ? '<span class="cmp-icon cmp-icon--best">&#9650;</span>'
+                   : rank === 'worst' ? '<span class="cmp-icon cmp-icon--worst">&#9660;</span>'
+                   : '';
+        bodyHTML += `<td class="${cls}">${icon} ${val}</td>`;
+
+        if (rank === 'best') scores[p.id].wins++;
+        if (rank === 'worst') scores[p.id].losses++;
       }
       bodyHTML += '</tr>';
     }
   }
 
   tbody.innerHTML = bodyHTML;
+
+  /* Итоговая строка с оценкой */
+  const maxWins = Math.max(...Object.values(scores).map(s => s.wins));
+  let summaryRow = '<tr class="compare-summary-row"><td>Итоговая оценка</td>';
+  for (const p of products) {
+    const s = scores[p.id];
+    const isBest = s.wins === maxWins && products.length > 1;
+    const cls = isBest ? 'cmp-winner' : '';
+    summaryRow += `<td class="${cls}">
+      <div class="cmp-score">
+        <span class="cmp-score__wins" title="Лучших характеристик">${s.wins}</span>
+        <span class="cmp-score__sep">/</span>
+        <span class="cmp-score__losses" title="Худших характеристик">${s.losses}</span>
+      </div>
+      ${isBest ? '<div class="cmp-badge">Лучший выбор</div>' : ''}
+    </td>`;
+  }
+  summaryRow += '</tr>';
+  tbody.insertAdjacentHTML('afterbegin', summaryRow);
 }
 
 function toggleDiffOnly(showDiffOnly) {

@@ -319,6 +319,43 @@ img { max-width: 100%; height: auto; }
 
 .compare-diff { background: var(--diff-bg); }
 
+/* Лучше / Хуже подсветка */
+.cmp-best { background: #e8f5e9 !important; }
+.cmp-worst { background: #fce4ec !important; }
+
+.cmp-icon { font-size: .7rem; vertical-align: middle; margin-right: 2px; }
+.cmp-icon--best { color: #2e7d32; }
+.cmp-icon--worst { color: #c62828; }
+
+/* Итоговая строка */
+.compare-summary-row td {
+  background: #f5f5f5 !important; font-weight: 700;
+  text-align: center; padding: 16px !important;
+  border-bottom: 3px solid var(--primary) !important;
+}
+.compare-summary-row td:first-child { text-align: left; }
+
+.cmp-score { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 1.2rem; }
+.cmp-score__wins { color: #2e7d32; font-weight: 800; }
+.cmp-score__losses { color: #c62828; font-weight: 800; }
+.cmp-score__sep { color: var(--text-light); }
+
+.cmp-winner {
+  background: #e8f5e9 !important;
+  border-left: 3px solid #2e7d32;
+  border-right: 3px solid #2e7d32;
+}
+
+.cmp-badge {
+  display: inline-block; margin-top: 6px;
+  padding: 3px 12px; border-radius: 12px;
+  background: #2e7d32; color: #fff;
+  font-size: .75rem; font-weight: 700;
+}
+
+/* Строка цены */
+.compare-price-row td { font-weight: 700; font-size: 1rem; }
+
 /* ── Состояния ── */
 
 .loading { text-align: center; padding: 40px; color: var(--text-light); font-size: 1.1rem; }

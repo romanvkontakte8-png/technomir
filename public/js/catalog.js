@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     for (const cat of cats) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = 'index.html?category=' + cat.id;
+      a.href = 'catalog.html?category=' + cat.id;
       a.className = 'categories-nav__link';
       a.textContent = cat.name;
       a.dataset.category = cat.id;

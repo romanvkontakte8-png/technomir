@@ -228,7 +228,7 @@ function initSearch() {
   function doSearch() {
     const q = input.value.trim();
     if (q) {
-      window.location.href = 'index.html?search=' + encodeURIComponent(q);
+      window.location.href = 'catalog.html?search=' + encodeURIComponent(q);
     }
   }
 

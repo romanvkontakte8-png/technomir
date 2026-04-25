@@ -87,8 +87,7 @@ const categories = [
   ['Планшеты', 'tablets'],
   ['Наушники', 'headphones'],
   ['Умные часы', 'smartwatches'],
-  ['Телевизоры', 'tvs'],
-  ['Аксессуары', 'accessories']
+  ['Телевизоры', 'tvs']
 ];
 
 const catIds = {};

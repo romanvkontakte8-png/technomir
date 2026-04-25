@@ -146,6 +146,18 @@ img { max-width: 100%; height: auto; }
 }
 .header__compare svg, .header__cart svg { opacity: .8; }
 
+.header__link {
+  padding: 10px 16px; border-radius: 12px;
+  color: var(--text-light); text-decoration: none;
+  font-weight: 500; font-size: .95rem;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.header__link:hover, .header__link--active {
+  background: rgba(99,102,241,.1); color: var(--primary-light);
+  border-color: rgba(99,102,241,.2); text-decoration: none;
+}
+
 .badge {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 22px; height: 22px; padding: 0 6px;

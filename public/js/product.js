@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const productId = params.get('id');
 
   if (!productId) {
-    window.location.href = 'index.html';
+    window.location.href = 'catalog.html';
     return;
   }
 
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     /* Хлебные крошки */
     document.getElementById('breadcrumbCategory').innerHTML =
-      `<a href="index.html?category=${product.category_id}">${product.category_name || 'Каталог'}</a>`;
+      `<a href="catalog.html?category=${product.category_id}">${product.category_name || 'Каталог'}</a>`;
     document.getElementById('breadcrumbProduct').textContent = product.name;
 
     /* Основная информация */

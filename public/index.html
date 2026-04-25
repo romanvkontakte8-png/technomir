@@ -3,9 +3,251 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ТехноМир — Интернет-магазин электроники</title>
+  <title>ТехноМир — Мир современных технологий</title>
   <link rel="stylesheet" href="css/style.css">
   <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('technomir_theme')||'light');</script>
+  <style>
+    .hero {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 24px;
+      margin: 32px auto;
+      max-width: 1200px;
+    }
+    .hero__img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      border-radius: 24px;
+      display: block;
+    }
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(15,23,42,.85) 0%, rgba(30,58,138,.6) 50%, transparent 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 48px 56px;
+    }
+    .hero__content { max-width: 560px; }
+    .hero__badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(99,102,241,.25);
+      color: #a5b4fc;
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(99,102,241,.3);
+    }
+    .hero__title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero__title span {
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero__desc {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.8);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero__btn {
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero__btn--primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(99,102,241,.4);
+    }
+    .hero__btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99,102,241,.5);
+    }
+    .hero__btn--outline {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(8px);
+    }
+    .hero__btn--outline:hover {
+      background: rgba(255,255,255,.2);
+      transform: translateY(-2px);
+    }
+
+    /* Секции */
+    .landing-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 20px;
+    }
+    .landing-section__title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .landing-section__subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-size: 1.05rem;
+    }
+
+    /* Преимущества */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(99,102,241,.15);
+    }
+    .feature-card__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+    }
+    .feature-card__title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .feature-card__desc {
+      color: var(--text-muted);
+      font-size: .92rem;
+      line-height: 1.5;
+    }
+
+    /* Категории */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .category-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all .25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .category-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 30px rgba(99,102,241,.15);
+    }
+    .category-card__icon { font-size: 2.2rem; }
+
+    /* Статистика */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 24px;
+      text-align: center;
+      padding: 40px 0;
+    }
+    .stat__number {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat__label {
+      color: var(--text-muted);
+      font-size: .95rem;
+      margin-top: 4px;
+    }
+
+    /* О магазине */
+    .about-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .about-block__text h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+    .about-block__text p {
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .about-block__img {
+      width: 100%;
+      border-radius: 16px;
+      object-fit: cover;
+      max-height: 340px;
+    }
+
+    @media (max-width: 768px) {
+      .hero__title { font-size: 1.8rem; }
+      .hero__overlay { padding: 24px; }
+      .hero { min-height: 380px; margin: 16px; }
+      .hero__img { height: 380px; }
+      .about-block { grid-template-columns: 1fr; }
+      .landing-section { padding: 32px 16px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -17,26 +259,17 @@
       <span class="logo__text">ТехноМир</span>
     </a>
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" class="search-bar__input" placeholder="Поиск товаров...">
-      <button class="search-bar__btn" id="searchBtn">Найти</button>
-    </div>
-
     <div class="header__actions">
+      <a href="index.html" class="header__link header__link--active">Главная</a>
+      <a href="catalog.html" class="header__link">Каталог</a>
+      <a href="compare.html" class="header__link">Сравнение</a>
       <a href="cart.html" class="header__cart" id="cartLink">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
         </svg>
         <span>Корзина</span>
         <span class="badge" id="cartBadge" style="display:none">0</span>
-      </a>
-      <a href="compare.html" class="header__compare" id="compareLink">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
-        </svg>
-        <span>Сравнение</span>
-        <span class="badge" id="compareBadge">0</span>
       </a>
       <button class="theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
       <div class="header__auth" id="authBlock">
@@ -46,30 +279,118 @@
   </div>
 </header>
 
-<!-- Навигация по категориям -->
-<nav class="categories-nav">
-  <div class="container">
-    <ul class="categories-nav__list" id="categoriesList">
-      <li><a href="index.html" class="categories-nav__link active" data-category="">Все товары</a></li>
-    </ul>
-  </div>
-</nav>
-
-<!-- Основной контент -->
-<main class="main">
-  <div class="container">
-    <h1 class="page-title" id="pageTitle">Каталог товаров</h1>
-
-    <div class="products-grid" id="productsGrid">
-      <!-- Товары загрузятся через JS -->
-    </div>
-
-    <div class="loading" id="loading" style="display:none;">Загрузка...</div>
-    <div class="empty-state" id="emptyState" style="display:none;">
-      <p>Товары не найдены</p>
+<!-- Hero -->
+<div class="hero">
+  <img src="img/technomir-store.png" alt="ТехноМир — магазин электроники" class="hero__img">
+  <div class="hero__overlay">
+    <div class="hero__content">
+      <span class="hero__badge">Мир современных технологий</span>
+      <h1 class="hero__title">Добро пожаловать в <span>ТехноМир</span></h1>
+      <p class="hero__desc">Интернет-магазин электроники с широким ассортиментом смартфонов, ноутбуков, планшетов и умных гаджетов от ведущих мировых брендов.</p>
+      <div class="hero__actions">
+        <a href="catalog.html" class="hero__btn hero__btn--primary">Перейти в каталог</a>
+        <a href="compare.html" class="hero__btn hero__btn--outline">Сравнить товары</a>
+      </div>
     </div>
   </div>
-</main>
+</div>
+
+<!-- Статистика -->
+<section class="landing-section">
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat__number">18+</div>
+      <div class="stat__label">Товаров в каталоге</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">6</div>
+      <div class="stat__label">Категорий</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">8</div>
+      <div class="stat__label">Мировых брендов</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">24/7</div>
+      <div class="stat__label">Онлайн-доступ</div>
+    </div>
+  </div>
+</section>
+
+<!-- Категории -->
+<section class="landing-section">
+  <h2 class="landing-section__title">Категории товаров</h2>
+  <p class="landing-section__subtitle">Выберите категорию и найдите идеальное устройство</p>
+  <div class="categories-grid">
+    <a href="catalog.html?category=smartphones" class="category-card">
+      <span class="category-card__icon">📱</span>
+      Смартфоны
+    </a>
+    <a href="catalog.html?category=laptops" class="category-card">
+      <span class="category-card__icon">💻</span>
+      Ноутбуки
+    </a>
+    <a href="catalog.html?category=tablets" class="category-card">
+      <span class="category-card__icon">📋</span>
+      Планшеты
+    </a>
+    <a href="catalog.html?category=headphones" class="category-card">
+      <span class="category-card__icon">🎧</span>
+      Наушники
+    </a>
+    <a href="catalog.html?category=smartwatches" class="category-card">
+      <span class="category-card__icon">⌚</span>
+      Умные часы
+    </a>
+    <a href="catalog.html?category=tvs" class="category-card">
+      <span class="category-card__icon">📺</span>
+      Телевизоры
+    </a>
+  </div>
+</section>
+
+<!-- Преимущества -->
+<section class="landing-section">
+  <h2 class="landing-section__title">Почему ТехноМир?</h2>
+  <p class="landing-section__subtitle">Наши преимущества для покупателей</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-card__icon">🔍</div>
+      <div class="feature-card__title">Умное сравнение</div>
+      <div class="feature-card__desc">Сравнивайте характеристики товаров бок о бок с визуальной подсветкой лучших и худших параметров</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card__icon">💳</div>
+      <div class="feature-card__title">Удобная оплата</div>
+      <div class="feature-card__desc">Пополняйте баланс и оплачивайте покупки мгновенно, средства возвращаются при отмене заказа</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card__icon">📦</div>
+      <div class="feature-card__title">Быстрая доставка</div>
+      <div class="feature-card__desc">Доставка по Москве и области, отслеживание статуса заказа в личном кабинете</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card__icon">🛡️</div>
+      <div class="feature-card__title">Гарантия качества</div>
+      <div class="feature-card__desc">Официальная гарантия от производителя на все товары в каталоге</div>
+    </div>
+  </div>
+</section>
+
+<!-- О магазине -->
+<section class="landing-section">
+  <h2 class="landing-section__title">О магазине</h2>
+  <p class="landing-section__subtitle">ТехноМир — ваш надёжный партнёр в мире технологий</p>
+  <div class="about-block">
+    <div class="about-block__text">
+      <h3>Сеть розничных магазинов электроники</h3>
+      <p>ТехноМир — это интернет-магазин и сеть розничных точек продаж, специализирующаяся на продаже современной электроники и гаджетов ведущих мировых брендов.</p>
+      <p>Мы предлагаем широкий ассортимент смартфонов, ноутбуков, планшетов, наушников, умных часов и телевизоров от Apple, Samsung, Xiaomi, ASUS, Lenovo, LG, Sony и других производителей.</p>
+      <p>Наша система сравнения товаров помогает клиентам быстро и наглядно оценить характеристики и выбрать оптимальное устройство по соотношению цена-качество.</p>
+    </div>
+    <img src="img/technomir-store.png" alt="Магазин ТехноМир" class="about-block__img">
+  </div>
+</section>
 
 <!-- Подвал -->
 <footer class="footer">
@@ -82,9 +403,9 @@
     <div class="footer__col">
       <h3>Информация</h3>
       <ul>
+        <li><a href="catalog.html">Каталог</a></li>
+        <li><a href="compare.html">Сравнение товаров</a></li>
         <li><a href="#">Доставка</a></li>
-        <li><a href="#">О магазине</a></li>
-        <li><a href="#">Гарантия</a></li>
         <li><a href="#">Контакты</a></li>
       </ul>
     </div>
@@ -99,6 +420,5 @@
 
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
-<script src="js/catalog.js"></script>
 </body>
 </html>

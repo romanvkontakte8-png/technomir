@@ -188,7 +188,14 @@
       border-color: var(--primary);
       box-shadow: 0 8px 30px rgba(99,102,241,.15);
     }
-    .category-card__icon { font-size: 2.2rem; }
+    .category-card__icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .category-card__icon svg { stroke: #fff; }
 
     /* Статистика */
     .stats-row {
@@ -347,27 +354,27 @@
   <p class="landing-section__subtitle">Выберите категорию и найдите идеальное устройство</p>
   <div class="categories-grid">
     <a href="catalog.html?category=smartphones" class="category-card">
-      <span class="category-card__icon">📱</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
       Смартфоны
     </a>
     <a href="catalog.html?category=laptops" class="category-card">
-      <span class="category-card__icon">💻</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></span>
       Ноутбуки
     </a>
     <a href="catalog.html?category=tablets" class="category-card">
-      <span class="category-card__icon">📋</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
       Планшеты
     </a>
     <a href="catalog.html?category=headphones" class="category-card">
-      <span class="category-card__icon">🎧</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span>
       Наушники
     </a>
     <a href="catalog.html?category=smartwatches" class="category-card">
-      <span class="category-card__icon">⌚</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></span>
       Умные часы
     </a>
     <a href="catalog.html?category=tvs" class="category-card">
-      <span class="category-card__icon">📺</span>
+      <span class="category-card__icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></span>
       Телевизоры
     </a>
   </div>
@@ -379,22 +386,22 @@
   <p class="landing-section__subtitle">Наши преимущества для покупателей</p>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-card__icon">🔍</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
       <div class="feature-card__title">Умное сравнение</div>
       <div class="feature-card__desc">Сравнивайте характеристики товаров бок о бок с визуальной подсветкой лучших и худших параметров</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">💳</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
       <div class="feature-card__title">Удобная оплата</div>
       <div class="feature-card__desc">Пополняйте баланс и оплачивайте покупки мгновенно, средства возвращаются при отмене заказа</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">📦</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
       <div class="feature-card__title">Быстрая доставка</div>
       <div class="feature-card__desc">Доставка по Москве и области, отслеживание статуса заказа в личном кабинете</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">🛡️</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
       <div class="feature-card__title">Гарантия качества</div>
       <div class="feature-card__desc">Официальная гарантия от производителя на все товары в каталоге</div>
     </div>
@@ -438,22 +445,22 @@
   <p class="landing-section__subtitle">Технологии, использованные при разработке проекта</p>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-card__icon">🌐</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
       <div class="feature-card__title">Frontend</div>
       <div class="feature-card__desc">HTML5, CSS3 (адаптивный дизайн, тёмная/светлая тема, glassmorphism), JavaScript ES6+ (модули, async/await, Fetch API)</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">⚙️</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
       <div class="feature-card__title">Backend</div>
       <div class="feature-card__desc">Node.js — серверная среда выполнения, Express.js — веб-фреймворк, REST API (16 эндпоинтов)</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">🗄️</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
       <div class="feature-card__title">База данных</div>
       <div class="feature-card__desc">SQLite — файловая реляционная СУБД, better-sqlite3 — драйвер для Node.js, 6 таблиц</div>
     </div>
     <div class="feature-card">
-      <div class="feature-card__icon">🔐</div>
+      <div class="feature-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
       <div class="feature-card__title">Безопасность</div>
       <div class="feature-card__desc">SHA-256 хэширование паролей, Bearer-токен авторизация, валидация данных на сервере</div>
     </div>

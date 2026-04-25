@@ -37,13 +37,61 @@ function renderProfile(user) {
   document.getElementById('profileView').innerHTML = `
     <p><strong>Имя:</strong> ${user.name}</p>
     <p><strong>Почта:</strong> ${user.email}</p>
+    <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
     <p><strong>Роль:</strong> ${user.role === 'admin' ? 'Администратор' : 'Клиент'}</p>
     ${user.role === 'admin' ? '<a href="admin.html" class="btn btn--primary" style="margin-top:12px;display:inline-block;">Админ-панель</a>' : ''}
   `;
+  renderPhoneButtons(user);
+}
+
+function renderPhoneButtons(user) {
+  const container = document.getElementById('phoneButtons');
+  if (!container) return;
+  if (user.phone) {
+    container.innerHTML = `
+      <button class="btn btn--outline" id="editPhoneBtn">Изменить номер</button>
+      <button class="btn btn--danger btn--sm" id="deletePhoneBtn" style="margin-left:8px;">Удалить номер</button>
+    `;
+    document.getElementById('editPhoneBtn').addEventListener('click', openPhoneEdit);
+    document.getElementById('deletePhoneBtn').addEventListener('click', deletePhone);
+  } else {
+    container.innerHTML = `<button class="btn btn--outline" id="addPhoneBtn">Добавить номер</button>`;
+    document.getElementById('addPhoneBtn').addEventListener('click', openPhoneEdit);
+  }
 }
 
 function updateBalance(balance) {
   document.getElementById('balanceDisplay').textContent = formatPrice(balance || 0);
+}
+
+/* ───────── Телефон ───────── */
+
+function openPhoneEdit() {
+  document.getElementById('profPhone').value = '';
+  document.getElementById('phoneConfirmPass').value = '';
+  const phoneErr = document.getElementById('phoneError');
+  if (phoneErr) phoneErr.style.display = 'none';
+  document.getElementById('phoneEditGroup').style.display = 'block';
+  document.getElementById('phoneButtons').style.display = 'none';
+}
+
+async function deletePhone() {
+  const pass = prompt('Введите текущий пароль для подтверждения:');
+  if (!pass) return;
+
+  try {
+    const res = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: Auth.headers(),
+      body: JSON.stringify({ remove_phone: true, current_password: pass })
+    });
+    if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
+    const updated = await res.json();
+    Auth.updateUser(updated);
+    updateAuthUI();
+    renderProfile(updated);
+    showToast('Номер удалён');
+  } catch { showToast('Ошибка'); }
 }
 
 /* ───────── Редактирование профиля ───────── */
@@ -131,6 +179,41 @@ function initProfileEditing() {
       editEmailBtn.style.display = '';
       showToast('Почта обновлена');
     } catch { emailError.textContent = 'Ошибка сохранения'; emailError.style.display = 'block'; }
+  });
+
+  /* --- Телефон --- */
+  const savePhoneBtn = document.getElementById('savePhoneBtn');
+  const cancelPhoneBtn = document.getElementById('cancelPhoneBtn');
+  const phoneError = document.getElementById('phoneError');
+
+  cancelPhoneBtn.addEventListener('click', () => {
+    document.getElementById('phoneEditGroup').style.display = 'none';
+    document.getElementById('phoneButtons').style.display = '';
+  });
+
+  savePhoneBtn.addEventListener('click', async () => {
+    const newPhone = document.getElementById('profPhone').value.trim();
+    const currentPass = document.getElementById('phoneConfirmPass').value;
+    phoneError.style.display = 'none';
+
+    if (!newPhone) { phoneError.textContent = 'Введите номер телефона'; phoneError.style.display = 'block'; return; }
+    if (!currentPass) { phoneError.textContent = 'Введите текущий пароль'; phoneError.style.display = 'block'; return; }
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: Auth.headers(),
+        body: JSON.stringify({ phone: newPhone, current_password: currentPass })
+      });
+      if (!res.ok) { const d = await res.json(); phoneError.textContent = d.error; phoneError.style.display = 'block'; return; }
+      const updated = await res.json();
+      Auth.updateUser(updated);
+      updateAuthUI();
+      renderProfile(updated);
+      document.getElementById('phoneEditGroup').style.display = 'none';
+      document.getElementById('phoneButtons').style.display = '';
+      showToast('Номер обновлён');
+    } catch { phoneError.textContent = 'Ошибка сохранения'; phoneError.style.display = 'block'; }
   });
 
   /* --- Пароль --- */

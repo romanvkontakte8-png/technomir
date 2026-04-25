@@ -33,7 +33,11 @@
         </div>
         <div class="form-group">
           <label for="email">Почта *</label>
-          <input type="email" id="email" required placeholder="Введите почту">
+          <input type="email" id="email" required placeholder="example@mail.ru">
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" id="phone" placeholder="+7 (___) ___-__-__" pattern="\+7\s?\(?\d{3}\)?\s?\d{3}[\-\s]?\d{2}[\-\s]?\d{2}" title="Формат: +7 (999) 123-45-67">
         </div>
         <div class="form-group">
           <label for="password">Пароль *</label>
@@ -84,6 +88,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
       body: JSON.stringify({
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value || undefined,
         password: password
       })
     });

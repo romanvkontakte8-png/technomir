@@ -182,7 +182,10 @@ function openEditModal(data) {
           </select>
         </div>
         <div class="form-group"><label>Баланс</label><input type="number" id="editBalance" class="form-input" min="0"></div>
-        <div class="form-group"><label>Новый пароль (оставьте пустым)</label><input type="password" id="editPassword" class="form-input"></div>
+        <div class="form-group"><label>Новый пароль пользователя (оставьте пустым)</label><input type="password" id="editPassword" class="form-input"></div>
+        <hr style="border-color:var(--border-color);margin:16px 0;">
+        <div class="form-group"><label>Ваш пароль администратора *</label><input type="password" id="adminConfirmPass" class="form-input" placeholder="Введите свой пароль для подтверждения"></div>
+        <div class="form-error" id="adminEditError" style="display:none"></div>
         <div class="modal-actions">
           <button class="btn btn--primary" id="saveUserBtn">Сохранить</button>
           <button class="btn btn--outline" id="closeModalBtn">Отмена</button>
@@ -198,6 +201,9 @@ function openEditModal(data) {
   document.getElementById('editRole').value = data.role;
   document.getElementById('editBalance').value = data.balance;
   document.getElementById('editPassword').value = '';
+  document.getElementById('adminConfirmPass').value = '';
+  const adminErr = document.getElementById('adminEditError');
+  if (adminErr) adminErr.style.display = 'none';
   modal.style.display = 'flex';
   modal.dataset.userId = data.id;
 
@@ -207,12 +213,23 @@ function openEditModal(data) {
 }
 
 async function saveUser(userId) {
+  const adminPass = document.getElementById('adminConfirmPass').value;
+  const adminErr = document.getElementById('adminEditError');
+  adminErr.style.display = 'none';
+
+  if (!adminPass) {
+    adminErr.textContent = 'Введите свой пароль администратора';
+    adminErr.style.display = 'block';
+    return;
+  }
+
   const body = {
     name: document.getElementById('editName').value.trim(),
     email: document.getElementById('editEmail').value.trim(),
     phone: document.getElementById('editPhone').value.trim(),
     role: document.getElementById('editRole').value,
-    balance: parseInt(document.getElementById('editBalance').value) || 0
+    balance: parseInt(document.getElementById('editBalance').value) || 0,
+    admin_password: adminPass
   };
   const pw = document.getElementById('editPassword').value;
   if (pw) body.password = pw;
@@ -223,9 +240,17 @@ async function saveUser(userId) {
       headers: Auth.headers(),
       body: JSON.stringify(body)
     });
-    if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
+    if (!res.ok) {
+      const d = await res.json();
+      adminErr.textContent = d.error;
+      adminErr.style.display = 'block';
+      return;
+    }
     document.getElementById('editUserModal').style.display = 'none';
     showToast('Пользователь обновлён');
     loadUsers();
-  } catch { showToast('Ошибка сохранения'); }
+  } catch {
+    adminErr.textContent = 'Ошибка сохранения';
+    adminErr.style.display = 'block';
+  }
 }

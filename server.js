@@ -170,18 +170,23 @@ app.post('/api/compare', (req, res) => {
 
 /* ───────── API: Авторизация ───────── */
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, phone, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Заполните все обязательные поля' });
+  if (!isValidEmail(email)) return res.status(400).json({ error: 'Некорректный формат почты' });
   if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
 
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
   if (exists) return res.status(400).json({ error: 'Пользователь с такой почтой уже существует' });
 
-  const info = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)')
-    .run(name, email, hashPassword(password), 'client');
+  const info = db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
+    .run(name, email, phone || null, hashPassword(password), 'client');
 
-  const user = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(info.lastInsertRowid);
+  const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(info.lastInsertRowid);
   const token = createToken(user);
   res.json({ user, token });
 });
@@ -224,13 +229,15 @@ app.post('/api/balance/topup', authMiddleware, (req, res) => {
 /* ───────── API: Профиль ───────── */
 
 app.put('/api/profile', authMiddleware, (req, res) => {
-  const { name, email, password, current_password } = req.body;
+  const { name, email, phone, remove_phone, password, current_password } = req.body;
 
-  if (name) {
+  if (name && !email && !password && phone === undefined && !remove_phone) {
     db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
+    const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(req.user.id);
+    return res.json(updated);
   }
 
-  if (email || password) {
+  if (email || password || phone !== undefined || remove_phone) {
     if (!current_password) return res.status(400).json({ error: 'Введите текущий пароль' });
     const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
     if (user.password !== hashPassword(current_password)) {
@@ -238,9 +245,16 @@ app.put('/api/profile', authMiddleware, (req, res) => {
     }
 
     if (email) {
+      if (!isValidEmail(email)) return res.status(400).json({ error: 'Некорректный формат почты' });
       const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, req.user.id);
       if (exists) return res.status(400).json({ error: 'Эта почта уже используется' });
       db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, req.user.id);
+    }
+    if (phone !== undefined && !remove_phone) {
+      db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone || null, req.user.id);
+    }
+    if (remove_phone) {
+      db.prepare('UPDATE users SET phone = NULL WHERE id = ?').run(req.user.id);
     }
     if (password && password.length >= 4) {
       db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), req.user.id);
@@ -252,13 +266,24 @@ app.put('/api/profile', authMiddleware, (req, res) => {
 });
 
 app.put('/api/admin/users/:id', authMiddleware, adminMiddleware, (req, res) => {
-  const { name, email, phone, role, balance, password } = req.body;
+  const { name, email, phone, role, balance, password, admin_password } = req.body;
+
+  if (!admin_password) return res.status(400).json({ error: 'Введите пароль администратора' });
+  const admin = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
+  if (admin.password !== hashPassword(admin_password)) {
+    return res.status(403).json({ error: 'Неверный пароль администратора' });
+  }
+
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
   if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
 
   if (name) db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, user.id);
-  if (email) db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, user.id);
-  if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone, user.id);
+  if (email) {
+    const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, user.id);
+    if (exists) return res.status(400).json({ error: 'Эта почта уже используется' });
+    db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, user.id);
+  }
+  if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone || null, user.id);
   if (role && ['client', 'admin'].includes(role)) db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, user.id);
   if (balance !== undefined) db.prepare('UPDATE users SET balance = ? WHERE id = ?').run(parseInt(balance) || 0, user.id);
   if (password && password.length >= 4) db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), user.id);

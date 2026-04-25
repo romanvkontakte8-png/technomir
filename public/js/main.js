@@ -46,7 +46,7 @@ const API = {
 const Theme = {
   KEY: 'technomir_theme',
 
-  get() { return localStorage.getItem(this.KEY) || 'dark'; },
+  get() { return localStorage.getItem(this.KEY) || 'light'; },
 
   set(theme) {
     localStorage.setItem(this.KEY, theme);

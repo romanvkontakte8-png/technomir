@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
   await loadProfile();
-  initProfileEdit();
+  initProfileEditing();
   initTopup();
   await loadOrders();
 });
@@ -36,8 +36,7 @@ async function loadProfile() {
 function renderProfile(user) {
   document.getElementById('profileView').innerHTML = `
     <p><strong>Имя:</strong> ${user.name}</p>
-    <p><strong>Email:</strong> ${user.email}</p>
-    ${user.phone ? `<p><strong>Телефон:</strong> ${user.phone}</p>` : ''}
+    <p><strong>Почта:</strong> ${user.email}</p>
     <p><strong>Роль:</strong> ${user.role === 'admin' ? 'Администратор' : 'Клиент'}</p>
   `;
 }
@@ -46,50 +45,135 @@ function updateBalance(balance) {
   document.getElementById('balanceDisplay').textContent = formatPrice(balance || 0);
 }
 
-function initProfileEdit() {
-  const editBtn = document.getElementById('editProfileBtn');
-  const formEl = document.getElementById('profileForm');
-  const saveBtn = document.getElementById('saveProfileBtn');
-  const cancelBtn = document.getElementById('cancelProfileBtn');
+/* ───────── Редактирование профиля ───────── */
 
-  editBtn.addEventListener('click', () => {
+function initProfileEditing() {
+  /* --- Имя --- */
+  const editNameBtn = document.getElementById('editNameBtn');
+  const nameGroup = document.getElementById('nameEditGroup');
+  const saveNameBtn = document.getElementById('saveNameBtn');
+  const cancelNameBtn = document.getElementById('cancelNameBtn');
+
+  editNameBtn.addEventListener('click', () => {
     const user = Auth.getUser();
     document.getElementById('profName').value = user.name || '';
-    document.getElementById('profPhone').value = user.phone || '';
-    document.getElementById('profPassword').value = '';
-    formEl.style.display = 'block';
-    editBtn.style.display = 'none';
+    nameGroup.style.display = 'block';
+    editNameBtn.style.display = 'none';
   });
 
-  cancelBtn.addEventListener('click', () => {
-    formEl.style.display = 'none';
-    editBtn.style.display = '';
+  cancelNameBtn.addEventListener('click', () => {
+    nameGroup.style.display = 'none';
+    editNameBtn.style.display = '';
   });
 
-  saveBtn.addEventListener('click', async () => {
-    const body = {};
+  saveNameBtn.addEventListener('click', async () => {
     const name = document.getElementById('profName').value.trim();
-    const phone = document.getElementById('profPhone').value.trim();
-    const password = document.getElementById('profPassword').value;
-    if (name) body.name = name;
-    body.phone = phone;
-    if (password) body.password = password;
+    if (!name) { showToast('Введите имя'); return; }
 
     try {
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: Auth.headers(),
-        body: JSON.stringify(body)
+        body: JSON.stringify({ name })
       });
       if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
       const updated = await res.json();
       Auth.updateUser(updated);
       updateAuthUI();
       renderProfile(updated);
-      formEl.style.display = 'none';
-      editBtn.style.display = '';
-      showToast('Профиль обновлён');
+      nameGroup.style.display = 'none';
+      editNameBtn.style.display = '';
+      showToast('Имя обновлено');
     } catch { showToast('Ошибка сохранения'); }
+  });
+
+  /* --- Почта --- */
+  const editEmailBtn = document.getElementById('editEmailBtn');
+  const emailGroup = document.getElementById('emailEditGroup');
+  const saveEmailBtn = document.getElementById('saveEmailBtn');
+  const cancelEmailBtn = document.getElementById('cancelEmailBtn');
+  const emailError = document.getElementById('emailError');
+
+  editEmailBtn.addEventListener('click', () => {
+    document.getElementById('profEmail').value = '';
+    document.getElementById('emailConfirmPass').value = '';
+    emailError.style.display = 'none';
+    emailGroup.style.display = 'block';
+    editEmailBtn.style.display = 'none';
+  });
+
+  cancelEmailBtn.addEventListener('click', () => {
+    emailGroup.style.display = 'none';
+    editEmailBtn.style.display = '';
+  });
+
+  saveEmailBtn.addEventListener('click', async () => {
+    const newEmail = document.getElementById('profEmail').value.trim();
+    const currentPass = document.getElementById('emailConfirmPass').value;
+    emailError.style.display = 'none';
+
+    if (!newEmail) { emailError.textContent = 'Введите новую почту'; emailError.style.display = 'block'; return; }
+    if (!currentPass) { emailError.textContent = 'Введите текущий пароль'; emailError.style.display = 'block'; return; }
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: Auth.headers(),
+        body: JSON.stringify({ email: newEmail, current_password: currentPass })
+      });
+      if (!res.ok) { const d = await res.json(); emailError.textContent = d.error; emailError.style.display = 'block'; return; }
+      const updated = await res.json();
+      Auth.updateUser(updated);
+      updateAuthUI();
+      renderProfile(updated);
+      emailGroup.style.display = 'none';
+      editEmailBtn.style.display = '';
+      showToast('Почта обновлена');
+    } catch { emailError.textContent = 'Ошибка сохранения'; emailError.style.display = 'block'; }
+  });
+
+  /* --- Пароль --- */
+  const editPassBtn = document.getElementById('editPassBtn');
+  const passGroup = document.getElementById('passEditGroup');
+  const savePassBtn = document.getElementById('savePassBtn');
+  const cancelPassBtn = document.getElementById('cancelPassBtn');
+  const passError = document.getElementById('passError');
+
+  editPassBtn.addEventListener('click', () => {
+    document.getElementById('passOld').value = '';
+    document.getElementById('passNew').value = '';
+    document.getElementById('passNew2').value = '';
+    passError.style.display = 'none';
+    passGroup.style.display = 'block';
+    editPassBtn.style.display = 'none';
+  });
+
+  cancelPassBtn.addEventListener('click', () => {
+    passGroup.style.display = 'none';
+    editPassBtn.style.display = '';
+  });
+
+  savePassBtn.addEventListener('click', async () => {
+    const oldPass = document.getElementById('passOld').value;
+    const newPass = document.getElementById('passNew').value;
+    const newPass2 = document.getElementById('passNew2').value;
+    passError.style.display = 'none';
+
+    if (!oldPass) { passError.textContent = 'Введите текущий пароль'; passError.style.display = 'block'; return; }
+    if (!newPass || newPass.length < 4) { passError.textContent = 'Новый пароль минимум 4 символа'; passError.style.display = 'block'; return; }
+    if (newPass !== newPass2) { passError.textContent = 'Пароли не совпадают'; passError.style.display = 'block'; return; }
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: Auth.headers(),
+        body: JSON.stringify({ password: newPass, current_password: oldPass })
+      });
+      if (!res.ok) { const d = await res.json(); passError.textContent = d.error; passError.style.display = 'block'; return; }
+      passGroup.style.display = 'none';
+      editPassBtn.style.display = '';
+      showToast('Пароль изменён');
+    } catch { passError.textContent = 'Ошибка сохранения'; passError.style.display = 'block'; }
   });
 }
 

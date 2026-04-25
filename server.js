@@ -171,28 +171,28 @@ app.post('/api/compare', (req, res) => {
 /* ───────── API: Авторизация ───────── */
 
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { name, email, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Заполните все обязательные поля' });
   if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
 
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-  if (exists) return res.status(400).json({ error: 'Пользователь с таким логином уже существует' });
+  if (exists) return res.status(400).json({ error: 'Пользователь с такой почтой уже существует' });
 
-  const info = db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
-    .run(name, email, phone || null, hashPassword(password), 'client');
+  const info = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)')
+    .run(name, email, hashPassword(password), 'client');
 
-  const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(info.lastInsertRowid);
+  const user = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(info.lastInsertRowid);
   const token = createToken(user);
   res.json({ user, token });
 });
 
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
+  if (!email || !password) return res.status(400).json({ error: 'Введите почту и пароль' });
 
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (!user || user.password !== hashPassword(password)) {
-    return res.status(401).json({ error: 'Неверный логин или пароль' });
+    return res.status(401).json({ error: 'Неверная почта или пароль' });
   }
 
   const token = createToken(user);
@@ -224,10 +224,28 @@ app.post('/api/balance/topup', authMiddleware, (req, res) => {
 /* ───────── API: Профиль ───────── */
 
 app.put('/api/profile', authMiddleware, (req, res) => {
-  const { name, phone, password } = req.body;
-  if (name) db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
-  if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone, req.user.id);
-  if (password && password.length >= 4) db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), req.user.id);
+  const { name, email, password, current_password } = req.body;
+
+  if (name) {
+    db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
+  }
+
+  if (email || password) {
+    if (!current_password) return res.status(400).json({ error: 'Введите текущий пароль' });
+    const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
+    if (user.password !== hashPassword(current_password)) {
+      return res.status(403).json({ error: 'Неверный текущий пароль' });
+    }
+
+    if (email) {
+      const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, req.user.id);
+      if (exists) return res.status(400).json({ error: 'Эта почта уже используется' });
+      db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, req.user.id);
+    }
+    if (password && password.length >= 4) {
+      db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), req.user.id);
+    }
+  }
 
   const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(req.user.id);
   res.json(updated);

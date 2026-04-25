@@ -664,13 +664,13 @@ function hashPassword(pwd) {
 }
 
 db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
-  .run('Администратор', 'admin', '+7 (963) 753-88-33', hashPassword('password'), 'admin');
+  .run('Администратор', 'admin@texnomir.ru', '+7 (963) 753-88-33', hashPassword('password'), 'admin');
 
-db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
-  .run('Пользователь', 'user', '+7 (999) 123-45-67', hashPassword('password'), 'client');
+db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)')
+  .run('Пользователь', 'user@texnomir.ru', hashPassword('password'), 'client');
 
 console.log('База данных ТехноМир успешно создана и наполнена!');
-console.log('Админ: admin / password');
-console.log('Клиент: user / password');
+console.log('Админ: admin@texnomir.ru / password');
+console.log('Клиент: user@texnomir.ru / password');
 console.log(`Путь к БД: ${dbPath}`);
 db.close();

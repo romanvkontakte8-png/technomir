@@ -50,22 +50,62 @@
       <div class="account-card">
         <h2>Профиль</h2>
         <div id="profileView"></div>
-        <button class="btn btn--outline" id="editProfileBtn" style="margin-top:12px">Редактировать профиль</button>
-        <div id="profileForm" style="display:none;margin-top:12px;">
-          <div class="form-group">
+
+        <!-- Имя -->
+        <div style="margin-top:16px;">
+          <div class="form-group" id="nameEditGroup" style="display:none;">
             <label>Имя</label>
             <input type="text" id="profName" class="form-input">
+            <div style="margin-top:8px;display:flex;gap:8px;">
+              <button class="btn btn--primary" id="saveNameBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelNameBtn">Отмена</button>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Телефон</label>
-            <input type="text" id="profPhone" class="form-input" placeholder="+7 (999) 999-99-99">
+          <button class="btn btn--outline" id="editNameBtn" style="margin-top:4px;">Изменить имя</button>
+        </div>
+
+        <!-- Почта -->
+        <div style="margin-top:12px;">
+          <div id="emailEditGroup" style="display:none;">
+            <div class="form-group">
+              <label>Новая почта</label>
+              <input type="email" id="profEmail" class="form-input" placeholder="Новая почта">
+            </div>
+            <div class="form-group">
+              <label>Текущий пароль</label>
+              <input type="password" id="emailConfirmPass" class="form-input" placeholder="Введите текущий пароль">
+            </div>
+            <div class="form-error" id="emailError" style="display:none"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn--primary" id="saveEmailBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelEmailBtn">Отмена</button>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Новый пароль (оставьте пустым, если не менять)</label>
-            <input type="password" id="profPassword" class="form-input" placeholder="Новый пароль">
+          <button class="btn btn--outline" id="editEmailBtn">Изменить почту</button>
+        </div>
+
+        <!-- Пароль -->
+        <div style="margin-top:12px;">
+          <div id="passEditGroup" style="display:none;">
+            <div class="form-group">
+              <label>Текущий пароль</label>
+              <input type="password" id="passOld" class="form-input" placeholder="Текущий пароль">
+            </div>
+            <div class="form-group">
+              <label>Новый пароль</label>
+              <input type="password" id="passNew" class="form-input" placeholder="Новый пароль (мин. 4 символа)">
+            </div>
+            <div class="form-group">
+              <label>Подтвердите новый пароль</label>
+              <input type="password" id="passNew2" class="form-input" placeholder="Повторите новый пароль">
+            </div>
+            <div class="form-error" id="passError" style="display:none"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn--primary" id="savePassBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelPassBtn">Отмена</button>
+            </div>
           </div>
-          <button class="btn btn--primary" id="saveProfileBtn">Сохранить</button>
-          <button class="btn btn--outline" id="cancelProfileBtn">Отмена</button>
+          <button class="btn btn--outline" id="editPassBtn">Изменить пароль</button>
         </div>
       </div>
 

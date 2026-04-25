@@ -82,8 +82,8 @@ echo.
 echo ============================================
 echo    Сайт доступен: http://localhost:3000
 echo.
-echo    Логин администратора: admin / password
-echo    Логин клиента:        user / password
+echo    Админ:  admin@texnomir.ru / password
+echo    Клиент: user@texnomir.ru / password
 echo ============================================
 echo    Для остановки закройте это окно
 echo    или нажмите Ctrl+C

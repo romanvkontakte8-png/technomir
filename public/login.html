@@ -36,8 +36,8 @@
       <h1>Вход в аккаунт</h1>
       <form id="loginForm">
         <div class="form-group">
-          <label for="email">Логин</label>
-          <input type="text" id="email" required placeholder="Введите логин">
+          <label for="email">Почта</label>
+          <input type="email" id="email" required placeholder="Введите почту">
         </div>
         <div class="form-group">
           <label for="password">Пароль</label>
@@ -82,7 +82,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     if (!res.ok) { errEl.textContent = data.error; errEl.style.display = 'block'; return; }
 
     Auth.login(data.token, data.user);
-    window.location.href = data.user.role === 'admin' ? '/admin.html' : '/';
+    window.location.href = data.user.role === 'admin' ? 'admin.html' : 'index.html';
   } catch (err) {
     errEl.textContent = 'Ошибка сервера'; errEl.style.display = 'block';
   }

@@ -462,6 +462,10 @@ img { max-width: 100%; height: auto; }
   backdrop-filter: blur(12px);
 }
 .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+[data-theme="light"] .toast {
+  background: #1e293b; color: #f1f5f9;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+}
 
 /* ── Формы авторизации ── */
 

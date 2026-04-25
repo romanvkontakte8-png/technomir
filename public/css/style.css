@@ -697,6 +697,15 @@ img { max-width: 100%; height: auto; }
 [data-theme="light"] .footer { background: #1e293b; color: #f1f5f9; }
 [data-theme="light"] .footer a { color: #94a3b8; }
 [data-theme="light"] .product-card__img-wrap { background: #f8fafc; }
+[data-theme="light"] .product-card__compare-btn {
+  background: rgba(255,255,255,.9); border-color: #cbd5e1; color: #6366f1;
+}
+[data-theme="light"] .product-card__compare-btn:hover {
+  background: #eef2ff; border-color: #6366f1; color: #6366f1;
+}
+[data-theme="light"] .product-card__compare-btn.active {
+  background: #6366f1; border-color: #6366f1; color: #fff;
+}
 [data-theme="light"] .product-card__price { color: #4f46e5 !important; }
 [data-theme="light"] .product-card__old-price { color: #94a3b8 !important; }
 [data-theme="light"] .product-page__price { color: #4f46e5 !important; }

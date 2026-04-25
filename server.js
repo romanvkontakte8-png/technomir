@@ -176,7 +176,7 @@ app.post('/api/auth/register', (req, res) => {
   if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
 
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-  if (exists) return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
+  if (exists) return res.status(400).json({ error: 'Пользователь с таким логином уже существует' });
 
   const info = db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
     .run(name, email, phone || null, hashPassword(password), 'client');
@@ -188,11 +188,11 @@ app.post('/api/auth/register', (req, res) => {
 
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Введите email и пароль' });
+  if (!email || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
 
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (!user || user.password !== hashPassword(password)) {
-    return res.status(401).json({ error: 'Неверный email или пароль' });
+    return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
 
   const token = createToken(user);

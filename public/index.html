@@ -101,8 +101,9 @@
     .landing-section {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 48px 20px;
+      padding: 32px 20px;
     }
+    .landing-section--compact { padding: 16px 20px; }
     .landing-section__title {
       font-size: 2rem;
       font-weight: 700;
@@ -195,7 +196,7 @@
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 24px;
       text-align: center;
-      padding: 40px 0;
+      padding: 16px 0;
     }
     .stat__number {
       font-size: 2.4rem;
@@ -295,8 +296,23 @@
   </div>
 </div>
 
-<!-- Статистика -->
+<!-- О магазине -->
 <section class="landing-section">
+  <h2 class="landing-section__title">О магазине</h2>
+  <p class="landing-section__subtitle">ТехноМир — ваш надёжный партнёр в мире технологий</p>
+  <div class="about-block">
+    <div class="about-block__text">
+      <h3>Сеть розничных магазинов электроники</h3>
+      <p>ТехноМир — это интернет-магазин и сеть розничных точек продаж, специализирующаяся на продаже современной электроники и гаджетов ведущих мировых брендов.</p>
+      <p>Мы предлагаем широкий ассортимент смартфонов, ноутбуков, планшетов, наушников, умных часов и телевизоров от Apple, Samsung, Xiaomi, ASUS, Lenovo, LG, Sony и других производителей.</p>
+      <p>Наша система сравнения товаров помогает клиентам быстро и наглядно оценить характеристики и выбрать оптимальное устройство по соотношению цена-качество.</p>
+    </div>
+    <img src="img/technomir-store.png" alt="Магазин ТехноМир" class="about-block__img">
+  </div>
+</section>
+
+<!-- Статистика -->
+<section class="landing-section--compact landing-section">
   <div class="stats-row">
     <div class="stat">
       <div class="stat__number">18+</div>
@@ -374,21 +390,6 @@
       <div class="feature-card__title">Гарантия качества</div>
       <div class="feature-card__desc">Официальная гарантия от производителя на все товары в каталоге</div>
     </div>
-  </div>
-</section>
-
-<!-- О магазине -->
-<section class="landing-section">
-  <h2 class="landing-section__title">О магазине</h2>
-  <p class="landing-section__subtitle">ТехноМир — ваш надёжный партнёр в мире технологий</p>
-  <div class="about-block">
-    <div class="about-block__text">
-      <h3>Сеть розничных магазинов электроники</h3>
-      <p>ТехноМир — это интернет-магазин и сеть розничных точек продаж, специализирующаяся на продаже современной электроники и гаджетов ведущих мировых брендов.</p>
-      <p>Мы предлагаем широкий ассортимент смартфонов, ноутбуков, планшетов, наушников, умных часов и телевизоров от Apple, Samsung, Xiaomi, ASUS, Lenovo, LG, Sony и других производителей.</p>
-      <p>Наша система сравнения товаров помогает клиентам быстро и наглядно оценить характеристики и выбрать оптимальное устройство по соотношению цена-качество.</p>
-    </div>
-    <img src="img/technomir-store.png" alt="Магазин ТехноМир" class="about-block__img">
   </div>
 </section>
 

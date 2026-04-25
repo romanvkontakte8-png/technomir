@@ -726,6 +726,31 @@ img { max-width: 100%; height: auto; }
 [data-theme="light"] textarea {
   background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
 }
+[data-theme="light"] .topup-custom input {
+  background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
+}
+[data-theme="light"] .topup-custom input::placeholder { color: #94a3b8; }
+[data-theme="light"] .topup-custom input:focus { background: #fff; border-color: #6366f1; }
+[data-theme="light"] .topup-btn {
+  background: #f1f5f9; border-color: #cbd5e1; color: #1e293b;
+}
+[data-theme="light"] .topup-btn:hover {
+  background: #eef2ff; border-color: #6366f1; color: #4f46e5;
+}
+[data-theme="light"] .account-card strong { color: #1e293b; }
+[data-theme="light"] .order-card__id { color: #1e293b; }
+[data-theme="light"] .order-card__total { color: #1e293b; }
+[data-theme="light"] .order-item__price { color: #1e293b; }
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select {
+  background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
+}
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group textarea:focus,
+[data-theme="light"] .form-group select:focus {
+  background: #fff; border-color: #6366f1;
+}
 
 /* ── Переключатель темы ── */
 .theme-toggle {

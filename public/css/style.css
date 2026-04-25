@@ -811,7 +811,14 @@ img { max-width: 100%; height: auto; }
 .topup-custom {
   display: flex; gap: 8px; align-items: center;
 }
-.topup-custom input { flex: 1; }
+.topup-custom input {
+  flex: 1; padding: 12px 16px;
+  background: var(--bg); border: 2px solid var(--border);
+  border-radius: 10px; font-size: .95rem; outline: none;
+  color: var(--text); transition: var(--transition); font-family: inherit;
+}
+.topup-custom input::placeholder { color: var(--text-muted); }
+.topup-custom input:focus { border-color: var(--primary); background: var(--bg-light); }
 
 /* ── Модальное окно ── */
 .modal-overlay {

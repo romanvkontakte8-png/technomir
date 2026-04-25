@@ -363,11 +363,15 @@ img { max-width: 100%; height: auto; }
   font-size: 1.1rem; font-weight: 700;
   color: var(--accent); margin-bottom: 8px;
 }
+.compare-product-cell__cart {
+  padding: 8px 18px; font-size: .85rem; border-radius: 8px;
+  margin-bottom: 6px; width: 100%;
+}
 .compare-product-cell__remove {
   background: transparent; border: 1px solid var(--danger);
   color: var(--danger); border-radius: 8px;
   padding: 6px 14px; font-size: .8rem; cursor: pointer;
-  transition: var(--transition);
+  transition: var(--transition); width: 100%;
 }
 .compare-product-cell__remove:hover { background: var(--danger); color: #fff; }
 

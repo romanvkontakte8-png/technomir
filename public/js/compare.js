@@ -145,6 +145,7 @@ function renderCompareTable(data) {
             <a href="product.html?id=${p.id}">${p.name}</a>
           </div>
           <div class="compare-product-cell__price">${formatPrice(p.price)}</div>
+          <button class="btn btn--primary compare-product-cell__cart" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image || ''}">В корзину</button>
           <button class="compare-product-cell__remove" data-id="${p.id}">Убрать</button>
         </div>
       </th>`;
@@ -162,6 +163,14 @@ function renderCompareTable(data) {
       } else {
         loadComparison(remaining);
       }
+    });
+  });
+
+  /* Кнопки "В корзину" */
+  thead.querySelectorAll('.compare-product-cell__cart').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Cart.add(Number(btn.dataset.id), btn.dataset.name, Number(btn.dataset.price), btn.dataset.image);
+      showToast('Товар добавлен в корзину');
     });
   });
 

@@ -38,6 +38,7 @@ function renderProfile(user) {
     <p><strong>Имя:</strong> ${user.name}</p>
     <p><strong>Почта:</strong> ${user.email}</p>
     <p><strong>Роль:</strong> ${user.role === 'admin' ? 'Администратор' : 'Клиент'}</p>
+    ${user.role === 'admin' ? '<a href="admin.html" class="btn btn--primary" style="margin-top:12px;display:inline-block;">Админ-панель</a>' : ''}
   `;
 }
 

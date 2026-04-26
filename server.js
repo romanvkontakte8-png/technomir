@@ -199,7 +199,7 @@ app.post('/api/auth/register', (req, res) => {
   const info = db.prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)')
     .run(name, email, phone || null, hashPassword(password), 'client');
 
-  const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(info.lastInsertRowid);
+  const user = db.prepare('SELECT id, name, email, phone, role, balance FROM users WHERE id = ?').get(info.lastInsertRowid);
   const token = createToken(user);
   res.json({ user, token });
 });
@@ -209,12 +209,20 @@ const loginAttempts = new Map();
 function checkLoginRate(ip) {
   const now = Date.now();
   const window = 15 * 60 * 1000;
-  const entry = loginAttempts.get(ip) || { count: 0, first: now };
-  if (now - entry.first > window) { entry.count = 0; entry.first = now; }
+  const entry = loginAttempts.get(ip);
+  if (!entry || now - entry.first > window) {
+    loginAttempts.set(ip, { count: 1, first: now });
+    return true;
+  }
   entry.count++;
-  loginAttempts.set(ip, entry);
   return entry.count <= 10;
 }
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of loginAttempts) {
+    if (now - entry.first > 15 * 60 * 1000) loginAttempts.delete(ip);
+  }
+}, 15 * 60 * 1000);
 
 app.post('/api/auth/login', (req, res) => {
   const ip = req.ip || req.connection.remoteAddress;
@@ -260,23 +268,21 @@ app.post('/api/balance/topup', authMiddleware, (req, res) => {
 app.put('/api/profile', authMiddleware, (req, res) => {
   const { name, email, phone, remove_phone, password, current_password } = req.body;
 
-  if (name && !email && !password && phone === undefined && !remove_phone) {
-    db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
-    const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(req.user.id);
-    return res.json(updated);
+  const needsPassword = !!(email || password || phone !== undefined || remove_phone);
+
+  if (needsPassword) {
+    if (!current_password) return res.status(400).json({ error: 'Введите текущий пароль' });
+    const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
+    if (user.password !== hashPassword(current_password)) {
+      return res.status(403).json({ error: 'Неверный текущий пароль' });
+    }
   }
 
   if (name) {
     db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
   }
 
-  if (email || password || phone !== undefined || remove_phone) {
-    if (!current_password) return res.status(400).json({ error: 'Введите текущий пароль' });
-    const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
-    if (user.password !== hashPassword(current_password)) {
-      return res.status(403).json({ error: 'Неверный текущий пароль' });
-    }
-
+  if (needsPassword) {
     if (email) {
       if (!isValidEmail(email)) return res.status(400).json({ error: 'Некорректный формат почты' });
       const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, req.user.id);
@@ -422,6 +428,7 @@ app.put('/api/admin/orders/:id/status', authMiddleware, adminMiddleware, (req, r
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Заказ не найден' });
   if (order.status === 'cancelled') return res.status(400).json({ error: 'Нельзя изменить статус отменённого заказа' });
+  if (status === 'cancelled' && order.status === 'delivered') return res.status(400).json({ error: 'Нельзя отменить доставленный заказ' });
 
   const updateStatus = db.transaction(() => {
     db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);

@@ -54,16 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       stockEl.className = 'product-page__stock product-page__stock--out';
     }
 
-    /* Кнопка «В корзину» */
-    const addToCartBtn = document.getElementById('addToCartBtn');
-    if (addToCartBtn) {
-      addToCartBtn.addEventListener('click', () => {
-        Cart.add(product.id, product.name, product.price, product.image);
-        showToast('Товар добавлен в корзину');
-        addToCartBtn.textContent = 'В корзине';
-        addToCartBtn.classList.add('btn--in-cart');
-      });
-    }
+    /* Кнопка «В корзину» с контролем количества */
+    renderProductCartControl(product);
 
     /* Кнопка сравнения */
     const compareBtn = document.getElementById('compareBtn');
@@ -123,3 +115,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     loading.textContent = 'Товар не найден';
   }
 });
+
+function renderProductCartControl(product) {
+  const container = document.getElementById('productCartControl');
+  if (!container) return;
+  const qty = Cart.getQty(product.id);
+
+  if (qty === 0) {
+    container.innerHTML = `<button class="btn btn--primary" id="addToCartBtn">В корзину</button>`;
+    container.querySelector('#addToCartBtn').addEventListener('click', () => {
+      Cart.add(product.id, product.name, product.price, product.image);
+      showToast('Товар добавлен в корзину');
+      renderProductCartControl(product);
+    });
+  } else {
+    container.innerHTML = `
+      <div class="product-page__qty-control">
+        <button class="qty-btn qty-btn--minus">−</button>
+        <span class="qty-value">${qty}</span>
+        <button class="qty-btn qty-btn--plus">+</button>
+      </div>`;
+    container.querySelector('.qty-btn--minus').addEventListener('click', () => {
+      Cart.updateQty(product.id, qty - 1);
+      if (qty - 1 <= 0) showToast('Товар убран из корзины');
+      renderProductCartControl(product);
+    });
+    container.querySelector('.qty-btn--plus').addEventListener('click', () => {
+      Cart.updateQty(product.id, qty + 1);
+      renderProductCartControl(product);
+    });
+  }
+}

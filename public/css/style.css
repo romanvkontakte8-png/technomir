@@ -82,6 +82,30 @@ img { max-width: 100%; height: auto; }
 .btn--in-cart { background: var(--success) !important; box-shadow: 0 4px 16px rgba(34,197,94,.3); }
 .btn--in-cart:hover { background: #16a34a !important; }
 .product-card__buy-btn { margin-top: 10px; width: 100%; }
+.product-card__cart-controls { margin-top: 10px; width: 100%; }
+.product-card__qty-control {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; border-radius: 12px; overflow: hidden;
+  border: 2px solid var(--primary); background: var(--card-bg);
+}
+.qty-btn {
+  width: 40px; height: 38px; border: none; cursor: pointer;
+  font-size: 1.1rem; font-weight: 700; transition: background .2s;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primary); color: #fff;
+}
+.qty-btn:hover { background: var(--primary-dark, #4338ca); }
+.qty-value {
+  min-width: 40px; text-align: center; font-weight: 700;
+  font-size: 1rem; color: var(--text);
+}
+.product-page__qty-control {
+  display: flex; align-items: center; gap: 0;
+  border-radius: 12px; overflow: hidden;
+  border: 2px solid var(--primary);
+}
+.product-page__qty-control .qty-btn { width: 48px; height: 44px; font-size: 1.2rem; }
+.product-page__qty-control .qty-value { min-width: 50px; font-size: 1.1rem; }
 
 /* ── Шапка ── */
 

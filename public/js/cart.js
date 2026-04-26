@@ -83,9 +83,8 @@ function renderCart() {
       const id = Number(btn.dataset.id);
       const item = Cart.get().find(i => i.product_id === id);
       if (!item) return;
-      if (btn.dataset.action === 'plus') Cart.updateQty(id, item.quantity + 1);
-      else Cart.updateQty(id, item.quantity - 1);
-      if (Cart.get().find(i => i.product_id === id)?.quantity < 1) Cart.remove(id);
+      const newQty = btn.dataset.action === 'plus' ? item.quantity + 1 : item.quantity - 1;
+      Cart.updateQty(id, newQty);
       renderCart();
     });
   });

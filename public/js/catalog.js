@@ -100,7 +100,7 @@ function createProductCard(product) {
         <span class="product-card__price">${formatPrice(product.price)}</span>
         ${product.old_price ? `<span class="product-card__old-price">${formatPrice(product.old_price)}</span>` : ''}
       </div>
-      <button class="btn btn--primary btn--sm product-card__buy-btn" data-id="${product.id}">В корзину</button>
+      <div class="product-card__cart-controls" data-id="${product.id}"></div>
     </div>
   `;
 
@@ -111,17 +111,44 @@ function createProductCard(product) {
     toggleCompare(product.id, compareBtn);
   });
 
-  const buyBtn = card.querySelector('.product-card__buy-btn');
-  buyBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    Cart.add(product.id, product.name, product.price, product.image);
-    showToast('Товар добавлен в корзину');
-    buyBtn.textContent = 'В корзине';
-    buyBtn.classList.add('btn--in-cart');
-  });
-
+  renderCartControl(card, product);
   return card;
+}
+
+function renderCartControl(card, product) {
+  const container = card.querySelector('.product-card__cart-controls');
+  const qty = Cart.getQty(product.id);
+
+  if (qty === 0) {
+    container.innerHTML = `<button class="btn btn--primary btn--sm product-card__buy-btn">В корзину</button>`;
+    container.querySelector('.product-card__buy-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      Cart.add(product.id, product.name, product.price, product.image);
+      showToast('Товар добавлен в корзину');
+      renderCartControl(card, product);
+    });
+  } else {
+    container.innerHTML = `
+      <div class="product-card__qty-control">
+        <button class="qty-btn qty-btn--minus">−</button>
+        <span class="qty-value">${qty}</span>
+        <button class="qty-btn qty-btn--plus">+</button>
+      </div>`;
+    container.querySelector('.qty-btn--minus').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      Cart.updateQty(product.id, qty - 1);
+      if (qty - 1 <= 0) showToast('Товар убран из корзины');
+      renderCartControl(card, product);
+    });
+    container.querySelector('.qty-btn--plus').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      Cart.updateQty(product.id, qty + 1);
+      renderCartControl(card, product);
+    });
+  }
 }
 
 function toggleCompare(id, btn) {

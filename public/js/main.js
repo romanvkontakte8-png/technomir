@@ -126,10 +126,16 @@ const Cart = {
     this.updateBadge();
   },
 
+  getQty(productId) {
+    const item = this.get().find(i => i.product_id === productId);
+    return item ? item.quantity : 0;
+  },
+
   updateQty(productId, qty) {
+    if (qty <= 0) { return this.remove(productId); }
     const items = this.get();
     const item = items.find(i => i.product_id === productId);
-    if (item) { item.quantity = Math.max(1, qty); }
+    if (item) { item.quantity = qty; }
     localStorage.setItem(this.KEY, JSON.stringify(items));
     this.updateBadge();
   },

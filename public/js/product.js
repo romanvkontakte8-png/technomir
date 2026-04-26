@@ -130,10 +130,13 @@ function renderProductCartControl(product) {
     });
   } else {
     container.innerHTML = `
-      <div class="product-page__qty-control">
-        <button class="qty-btn qty-btn--minus">−</button>
-        <span class="qty-value">${qty}</span>
-        <button class="qty-btn qty-btn--plus">+</button>
+      <div class="product-page__qty-row">
+        <div class="product-page__qty-control">
+          <button class="qty-btn qty-btn--minus">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn qty-btn--plus">+</button>
+        </div>
+        <button class="btn btn--remove-all btn--remove-all--lg" title="Убрать из корзины">✕</button>
       </div>`;
     container.querySelector('.qty-btn--minus').addEventListener('click', () => {
       Cart.updateQty(product.id, qty - 1);
@@ -142,6 +145,11 @@ function renderProductCartControl(product) {
     });
     container.querySelector('.qty-btn--plus').addEventListener('click', () => {
       Cart.updateQty(product.id, qty + 1);
+      renderProductCartControl(product);
+    });
+    container.querySelector('.btn--remove-all').addEventListener('click', () => {
+      Cart.remove(product.id);
+      showToast('Товар убран из корзины');
       renderProductCartControl(product);
     });
   }

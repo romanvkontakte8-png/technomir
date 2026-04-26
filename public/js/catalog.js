@@ -130,10 +130,13 @@ function renderCartControl(card, product) {
     });
   } else {
     container.innerHTML = `
-      <div class="product-card__qty-control">
-        <button class="qty-btn qty-btn--minus">−</button>
-        <span class="qty-value">${qty}</span>
-        <button class="qty-btn qty-btn--plus">+</button>
+      <div class="product-card__qty-row">
+        <div class="product-card__qty-control">
+          <button class="qty-btn qty-btn--minus">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn qty-btn--plus">+</button>
+        </div>
+        <button class="btn btn--remove-all" title="Убрать из корзины">✕</button>
       </div>`;
     container.querySelector('.qty-btn--minus').addEventListener('click', (e) => {
       e.preventDefault();
@@ -146,6 +149,13 @@ function renderCartControl(card, product) {
       e.preventDefault();
       e.stopPropagation();
       Cart.updateQty(product.id, qty + 1);
+      renderCartControl(card, product);
+    });
+    container.querySelector('.btn--remove-all').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      Cart.remove(product.id);
+      showToast('Товар убран из корзины');
       renderCartControl(card, product);
     });
   }

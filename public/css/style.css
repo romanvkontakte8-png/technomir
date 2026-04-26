@@ -818,6 +818,7 @@ img { max-width: 100%; height: auto; }
   display: flex; align-items: center; justify-content: center;
   transition: var(--transition);
   flex-shrink: 0;
+  color: var(--text);
 }
 .theme-toggle:hover {
   border-color: var(--primary);

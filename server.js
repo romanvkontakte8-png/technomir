@@ -5,7 +5,7 @@ const Database = require('better-sqlite3');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET = 'technomir-secret-2024';
+const SECRET = process.env.TECHNOMIR_SECRET || 'technomir-secret-2024';
 
 const dbPath = path.join(__dirname, 'db', 'technomir.db');
 let db;
@@ -220,6 +220,7 @@ app.post('/api/balance/topup', authMiddleware, (req, res) => {
   const { amount } = req.body;
   const val = parseInt(amount);
   if (!val || val <= 0) return res.status(400).json({ error: 'Укажите положительную сумму' });
+  if (val > 1000000) return res.status(400).json({ error: 'Максимальная сумма пополнения: 1 000 000 ₽' });
 
   db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(val, req.user.id);
   const user = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);

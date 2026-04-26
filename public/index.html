@@ -20,19 +20,41 @@
       position: absolute; inset: 0;
       background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
       background-size: 60px 60px;
+      animation: heroGridShift 40s linear infinite;
+    }
+    @keyframes heroGridShift {
+      from { background-position: 0 0; }
+      to { background-position: 60px 60px; }
     }
     .hero__circle {
       position: absolute; border-radius: 50%; background: white;
+      will-change: transform;
     }
-    .hero__circle--1 { width: 400px; height: 400px; top: -100px; right: -50px; opacity: .07; }
-    .hero__circle--2 { width: 300px; height: 300px; bottom: -80px; right: 200px; opacity: .04; }
-    .hero__circle--3 { width: 500px; height: 500px; bottom: -200px; left: -100px; opacity: .03; }
+    .hero__circle--1 { width: 400px; height: 400px; top: -100px; right: -50px; opacity: .07; animation: heroFloat1 20s ease-in-out infinite; }
+    .hero__circle--2 { width: 300px; height: 300px; bottom: -80px; right: 200px; opacity: .04; animation: heroFloat2 25s ease-in-out infinite; }
+    .hero__circle--3 { width: 500px; height: 500px; bottom: -200px; left: -100px; opacity: .03; animation: heroFloat3 30s ease-in-out infinite; }
+    @keyframes heroFloat1 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-30px, 20px); }
+    }
+    @keyframes heroFloat2 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(25px, -15px); }
+    }
+    @keyframes heroFloat3 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(20px, 25px); }
+    }
     .hero__inner {
       position: relative; z-index: 2;
       max-width: 1200px; margin: 0 auto; padding: 0 40px;
       width: 100%; display: flex; align-items: center; justify-content: space-between;
     }
-    .hero__content { max-width: 560px; }
+    .hero__content { max-width: 560px; animation: heroFadeIn .8s ease-out; }
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .hero__badge {
       display: inline-block;
       padding: 6px 16px;
@@ -97,6 +119,7 @@
     }
     .hero__stats {
       display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      animation: heroFadeIn .8s ease-out .3s both;
     }
     .hero__stat-card {
       width: 150px; padding: 20px;

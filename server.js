@@ -422,13 +422,21 @@ app.get('/api/admin/orders', authMiddleware, adminMiddleware, (req, res) => {
 
 app.put('/api/admin/orders/:id/status', authMiddleware, adminMiddleware, (req, res) => {
   const { status } = req.body;
+  const allowedTransitions = {
+    new: ['confirmed', 'cancelled'],
+    confirmed: ['delivered', 'cancelled'],
+    delivered: [],
+    cancelled: []
+  };
+
   const valid = ['new', 'confirmed', 'delivered', 'cancelled'];
   if (!valid.includes(status)) return res.status(400).json({ error: 'Недопустимый статус' });
 
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Заказ не найден' });
-  if (order.status === 'cancelled') return res.status(400).json({ error: 'Нельзя изменить статус отменённого заказа' });
-  if (status === 'cancelled' && order.status === 'delivered') return res.status(400).json({ error: 'Нельзя отменить доставленный заказ' });
+  if (!(allowedTransitions[order.status] || []).includes(status)) {
+    return res.status(400).json({ error: `Нельзя сменить статус с "${order.status}" на "${status}"` });
+  }
 
   const updateStatus = db.transaction(() => {
     db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);

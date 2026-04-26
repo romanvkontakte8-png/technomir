@@ -259,7 +259,7 @@ function updateAuthUI() {
     links += ` <a href="#" onclick="Auth.logout();return false;" class="header__logout">Выйти</a>`;
     authBlock.innerHTML = links;
   } else {
-    authBlock.innerHTML = '<a href="login.html">Войти</a>';
+    authBlock.innerHTML = '<a href="login.html" class="header__login-btn">Войти</a>';
   }
 }
 

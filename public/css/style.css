@@ -208,6 +208,13 @@ img { max-width: 100%; height: auto; }
 .header__auth { display: flex; align-items: center; gap: 10px; font-size: .9rem; }
 .header__auth a { white-space: nowrap; color: var(--text-light); }
 .header__auth a:hover { color: var(--primary-light); }
+.header__login-btn {
+  background: var(--gradient) !important; color: #fff !important;
+  padding: 8px 20px; border-radius: 10px; font-weight: 700;
+  text-decoration: none; box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  transition: var(--transition);
+}
+.header__login-btn:hover { opacity: .9; text-decoration: none !important; color: #fff !important; }
 .header__admin-link {
   background: var(--gradient) !important; color: #fff !important;
   padding: 6px 14px; border-radius: 8px; font-size: .8rem; font-weight: 700;

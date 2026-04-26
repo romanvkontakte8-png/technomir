@@ -267,6 +267,7 @@ function initTopup() {
   const cardNum = document.getElementById('cardNumber');
   const cardExp = document.getElementById('cardExpiry');
   const cardCvv = document.getElementById('cardCvv');
+  const cardHolder = document.getElementById('cardHolder');
   const payErr = document.getElementById('paymentError');
 
   document.getElementById('openTopupBtn').addEventListener('click', () => {
@@ -275,6 +276,7 @@ function initTopup() {
     cardNum.value = '';
     cardExp.value = '';
     cardCvv.value = '';
+    cardHolder.value = '';
     payErr.style.display = 'none';
     document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('active'));
   });
@@ -313,6 +315,11 @@ function initTopup() {
     cardCvv.value = cardCvv.value.replace(/\D/g, '').slice(0, 3);
   });
 
+  /* Владелец: только буквы и пробелы */
+  cardHolder.addEventListener('input', () => {
+    cardHolder.value = cardHolder.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, '').toUpperCase();
+  });
+
   /* Только цифры в сумме */
   amountInput.addEventListener('input', () => {
     amountInput.value = amountInput.value.replace(/\D/g, '');
@@ -328,6 +335,7 @@ function initTopup() {
 
     if (!amount || amount <= 0) { showPayError('Введите сумму пополнения'); return; }
     if (card.length !== 16) { showPayError('Введите 16 цифр номера карты'); return; }
+    if (cardHolder.value.trim().length < 2) { showPayError('Введите имя владельца карты'); return; }
     if (!/^\d{2}\/\d{2}$/.test(exp)) { showPayError('Введите срок действия в формате MM/YY'); return; }
     const month = parseInt(exp.slice(0, 2));
     if (month < 1 || month > 12) { showPayError('Месяц должен быть от 01 до 12'); return; }

@@ -259,7 +259,7 @@ function updateAuthUI() {
     const balanceStr = typeof user.balance === 'number' ? formatPrice(user.balance) : '';
     let links = '';
     if (balanceStr) links += `<span class="header__balance" title="Баланс">${balanceStr}</span>`;
-    links += `<a href="account.html">${user.name}</a>`;
+    links += `<a href="account.html">${escapeHtml(user.name)}</a>`;
     if (Auth.isAdmin()) links += ` <a href="admin.html" class="header__admin-link">Админ</a>`;
     links += ` <a href="#" onclick="Auth.logout();return false;" class="header__logout">Выйти</a>`;
     authBlock.innerHTML = links;

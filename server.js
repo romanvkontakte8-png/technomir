@@ -20,7 +20,16 @@ try {
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
+
+/* Заголовки безопасности */
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 
 /* ───────── Утилиты авторизации ───────── */
 
@@ -35,15 +44,17 @@ function createToken(user) {
 }
 
 function verifyToken(token) {
-  if (!token) return null;
-  const [b64, sig] = token.split('.');
-  if (!b64 || !sig) return null;
-  const payload = Buffer.from(b64, 'base64').toString();
-  const check = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
-  if (check !== sig) return null;
-  const data = JSON.parse(payload);
-  if (data.exp < Date.now()) return null;
-  return data;
+  try {
+    if (!token) return null;
+    const [b64, sig] = token.split('.');
+    if (!b64 || !sig) return null;
+    const payload = Buffer.from(b64, 'base64').toString();
+    const check = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
+    if (check.length !== sig.length || !crypto.timingSafeEqual(Buffer.from(check), Buffer.from(sig))) return null;
+    const data = JSON.parse(payload);
+    if (data.exp < Date.now()) return null;
+    return data;
+  } catch { return null; }
 }
 
 function authMiddleware(req, res, next) {
@@ -177,8 +188,10 @@ function isValidEmail(email) {
 app.post('/api/auth/register', (req, res) => {
   const { name, email, phone, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Заполните все обязательные поля' });
+  if (typeof name !== 'string' || name.length > 100) return res.status(400).json({ error: 'Имя слишком длинное' });
+  if (typeof email !== 'string' || email.length > 200) return res.status(400).json({ error: 'Почта слишком длинная' });
   if (!isValidEmail(email)) return res.status(400).json({ error: 'Некорректный формат почты' });
-  if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
+  if (typeof password !== 'string' || password.length < 4 || password.length > 200) return res.status(400).json({ error: 'Пароль от 4 до 200 символов' });
 
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
   if (exists) return res.status(400).json({ error: 'Пользователь с такой почтой уже существует' });
@@ -191,7 +204,22 @@ app.post('/api/auth/register', (req, res) => {
   res.json({ user, token });
 });
 
+/* Rate-limit для логина: макс. 10 попыток за 15 мин с одного IP */
+const loginAttempts = new Map();
+function checkLoginRate(ip) {
+  const now = Date.now();
+  const window = 15 * 60 * 1000;
+  const entry = loginAttempts.get(ip) || { count: 0, first: now };
+  if (now - entry.first > window) { entry.count = 0; entry.first = now; }
+  entry.count++;
+  loginAttempts.set(ip, entry);
+  return entry.count <= 10;
+}
+
 app.post('/api/auth/login', (req, res) => {
+  const ip = req.ip || req.connection.remoteAddress;
+  if (!checkLoginRate(ip)) return res.status(429).json({ error: 'Слишком много попыток. Подождите 15 минут' });
+
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Введите почту и пароль' });
 
@@ -304,6 +332,9 @@ app.post('/api/orders', authMiddleware, (req, res) => {
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Корзина пуста' });
   }
+  if (address && (typeof address !== 'string' || address.length > 500)) return res.status(400).json({ error: 'Адрес слишком длинный' });
+  if (comment && (typeof comment !== 'string' || comment.length > 1000)) return res.status(400).json({ error: 'Комментарий слишком длинный' });
+  if (items.length > 100) return res.status(400).json({ error: 'Слишком много товаров' });
 
   let total = 0;
   const validated = [];

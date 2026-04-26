@@ -35,9 +35,9 @@ async function loadProfile() {
 
 function renderProfile(user) {
   document.getElementById('profileView').innerHTML = `
-    <p><strong>Имя:</strong> ${user.name}</p>
-    <p><strong>Почта:</strong> ${user.email}</p>
-    <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
+    <p><strong>Имя:</strong> ${escapeHtml(user.name)}</p>
+    <p><strong>Почта:</strong> ${escapeHtml(user.email)}</p>
+    <p><strong>Телефон:</strong> ${user.phone ? escapeHtml(user.phone) : 'Не указан'}</p>
     <p><strong>Роль:</strong> ${user.role === 'admin' ? 'Администратор' : 'Клиент'}</p>
     ${user.role === 'admin' ? '<a href="admin.html" class="btn btn--primary" style="margin-top:12px;display:inline-block;">Админ-панель</a>' : ''}
   `;

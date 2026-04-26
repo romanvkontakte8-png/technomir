@@ -140,14 +140,14 @@ async function loadUsers() {
       html += `
         <tr>
           <td>${u.id}</td>
-          <td>${u.name}</td>
-          <td>${u.email}</td>
-          <td>${u.phone || '—'}</td>
+          <td>${escapeHtml(u.name)}</td>
+          <td>${escapeHtml(u.email)}</td>
+          <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
           <td><span class="role-badge role--${u.role}">${u.role === 'admin' ? 'Админ' : 'Клиент'}</span></td>
           <td>${formatPrice(u.balance || 0)}</td>
           <td>${u.order_count}</td>
           <td>${formatPrice(u.total_spent)}</td>
-          <td><button class="btn btn--sm btn--outline edit-user-btn" data-id="${u.id}" data-name="${u.name}" data-email="${u.email}" data-phone="${u.phone || ''}" data-role="${u.role}" data-balance="${u.balance || 0}">Редактировать</button></td>
+          <td><button class="btn btn--sm btn--outline edit-user-btn" data-id="${u.id}" data-name="${escapeHtml(u.name)}" data-email="${escapeHtml(u.email)}" data-phone="${escapeHtml(u.phone || '')}" data-role="${u.role}" data-balance="${u.balance || 0}">Редактировать</button></td>
         </tr>
       `;
     }

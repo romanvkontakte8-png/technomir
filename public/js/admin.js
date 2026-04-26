@@ -73,13 +73,13 @@ function renderOrders() {
       <div class="order-card__header">
         <span class="order-card__id">Заказ #${order.id}</span>
         <span class="order-card__date">${new Date(order.created_at).toLocaleDateString('ru-RU')}</span>
-        <span class="order-card__user">${order.user_name} (${order.user_email})</span>
+        <span class="order-card__user">${escapeHtml(order.user_name)} (${escapeHtml(order.user_email)})</span>
         <span class="status-badge status--${order.status}">${STATUS_LABELS[order.status] || order.status}</span>
       </div>
       <div class="order-card__items">${itemsHTML}</div>
       <div class="order-card__footer">
         <span class="order-card__total">Итого: ${formatPrice(order.total)}</span>
-        ${order.address ? `<span class="order-card__address">Адрес: ${order.address}</span>` : ''}
+        ${order.address ? `<span class="order-card__address">Адрес: ${escapeHtml(order.address)}</span>` : ''}
         <div class="order-card__actions">
           <label>Статус:</label>
           <select class="status-select" data-id="${order.id}">

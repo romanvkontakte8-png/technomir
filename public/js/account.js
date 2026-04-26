@@ -421,7 +421,7 @@ async function loadOrders() {
         <div class="order-card__items">${itemsHTML}</div>
         <div class="order-card__footer">
           <span class="order-card__total">Итого: ${formatPrice(order.total)}</span>
-          ${order.address ? `<span class="order-card__address">Адрес: ${order.address}</span>` : ''}
+          ${order.address ? `<span class="order-card__address">Адрес: ${escapeHtml(order.address)}</span>` : ''}
           ${canCancel ? `<button class="btn btn--danger btn--sm cancel-btn" data-id="${order.id}">Отменить заказ</button>` : ''}
         </div>
       `;

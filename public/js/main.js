@@ -220,6 +220,11 @@ function showToast(message) {
   toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
+/* Экранирование HTML */
+function escapeHtml(str) {
+  return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 /* Форматирование цены */
 function formatPrice(price) {
   return Number(price).toLocaleString('ru-RU') + ' \u20BD';

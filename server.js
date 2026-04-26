@@ -320,18 +320,20 @@ app.post('/api/orders', authMiddleware, (req, res) => {
     return res.status(400).json({ error: 'Недостаточно средств', need: total, balance: currentUser.balance });
   }
 
-  db.prepare('UPDATE users SET balance = balance - ? WHERE id = ?').run(total, req.user.id);
+  const createOrder = db.transaction(() => {
+    db.prepare('UPDATE users SET balance = balance - ? WHERE id = ?').run(total, req.user.id);
+    const orderInfo = db.prepare('INSERT INTO orders (user_id, status, total, address, comment) VALUES (?, ?, ?, ?, ?)')
+      .run(req.user.id, 'new', total, address || '', comment || '');
+    const insertItem = db.prepare('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)');
+    for (const v of validated) {
+      insertItem.run(orderInfo.lastInsertRowid, v.product_id, v.quantity, v.price);
+    }
+    return orderInfo.lastInsertRowid;
+  });
 
-  const orderInfo = db.prepare('INSERT INTO orders (user_id, status, total, address, comment) VALUES (?, ?, ?, ?, ?)')
-    .run(req.user.id, 'new', total, address || '', comment || '');
-
-  const insertItem = db.prepare('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)');
-  for (const v of validated) {
-    insertItem.run(orderInfo.lastInsertRowid, v.product_id, v.quantity, v.price);
-  }
-
+  const orderId = createOrder();
   const newBalance = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id).balance;
-  res.json({ order_id: orderInfo.lastInsertRowid, status: 'new', total, balance: newBalance });
+  res.json({ order_id: orderId, status: 'new', total, balance: newBalance });
 });
 
 app.get('/api/orders', authMiddleware, (req, res) => {
@@ -350,8 +352,11 @@ app.put('/api/orders/:id/cancel', authMiddleware, (req, res) => {
   if (!order) return res.status(404).json({ error: 'Заказ не найден' });
   if (order.status !== 'new') return res.status(400).json({ error: 'Можно отменить только новые заказы' });
 
-  db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('cancelled', order.id);
-  db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(order.total, req.user.id);
+  const cancelOrder = db.transaction(() => {
+    db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('cancelled', order.id);
+    db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(order.total, req.user.id);
+  });
+  cancelOrder();
   res.json({ success: true });
 });
 
@@ -385,8 +390,15 @@ app.put('/api/admin/orders/:id/status', authMiddleware, adminMiddleware, (req, r
 
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  if (order.status === 'cancelled') return res.status(400).json({ error: 'Нельзя изменить статус отменённого заказа' });
 
-  db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);
+  const updateStatus = db.transaction(() => {
+    db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);
+    if (status === 'cancelled') {
+      db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(order.total, order.user_id);
+    }
+  });
+  updateStatus();
   res.json({ success: true });
 });
 

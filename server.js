@@ -237,6 +237,10 @@ app.put('/api/profile', authMiddleware, (req, res) => {
     return res.json(updated);
   }
 
+  if (name) {
+    db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
+  }
+
   if (email || password || phone !== undefined || remove_phone) {
     if (!current_password) return res.status(400).json({ error: 'Введите текущий пароль' });
     const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);

@@ -262,18 +262,92 @@ function initProfileEditing() {
 }
 
 function initTopup() {
-  document.querySelectorAll('.topup-btn').forEach(btn => {
-    btn.addEventListener('click', () => topup(parseInt(btn.dataset.amount)));
+  const overlay = document.getElementById('paymentOverlay');
+  const amountInput = document.getElementById('topupAmount');
+  const cardNum = document.getElementById('cardNumber');
+  const cardExp = document.getElementById('cardExpiry');
+  const cardCvv = document.getElementById('cardCvv');
+  const payErr = document.getElementById('paymentError');
+
+  document.getElementById('openTopupBtn').addEventListener('click', () => {
+    overlay.style.display = 'flex';
+    amountInput.value = '';
+    cardNum.value = '';
+    cardExp.value = '';
+    cardCvv.value = '';
+    payErr.style.display = 'none';
+    document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('active'));
   });
 
-  document.getElementById('topupBtn').addEventListener('click', () => {
-    const val = parseInt(document.getElementById('topupAmount').value);
-    if (val > 0) topup(val);
-    else showToast('Введите сумму пополнения');
+  document.getElementById('cancelPayBtn').addEventListener('click', () => {
+    overlay.style.display = 'none';
   });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.style.display = 'none';
+  });
+
+  document.querySelectorAll('.topup-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      amountInput.value = btn.dataset.amount;
+    });
+  });
+
+  /* Маска номера карты: 0000 0000 0000 0000 */
+  cardNum.addEventListener('input', () => {
+    let v = cardNum.value.replace(/\D/g, '').slice(0, 16);
+    cardNum.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+  });
+
+  /* Маска срока: MM/YY */
+  cardExp.addEventListener('input', () => {
+    let v = cardExp.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    cardExp.value = v;
+  });
+
+  /* CVV: только цифры */
+  cardCvv.addEventListener('input', () => {
+    cardCvv.value = cardCvv.value.replace(/\D/g, '').slice(0, 3);
+  });
+
+  /* Только цифры в сумме */
+  amountInput.addEventListener('input', () => {
+    amountInput.value = amountInput.value.replace(/\D/g, '');
+    document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('active'));
+  });
+
+  document.getElementById('payBtn').addEventListener('click', () => {
+    payErr.style.display = 'none';
+    const amount = parseInt(amountInput.value);
+    const card = cardNum.value.replace(/\s/g, '');
+    const exp = cardExp.value;
+    const cvv = cardCvv.value;
+
+    if (!amount || amount <= 0) { showPayError('Введите сумму пополнения'); return; }
+    if (card.length !== 16) { showPayError('Введите 16 цифр номера карты'); return; }
+    if (!/^\d{2}\/\d{2}$/.test(exp)) { showPayError('Введите срок действия в формате MM/YY'); return; }
+    const month = parseInt(exp.slice(0, 2));
+    if (month < 1 || month > 12) { showPayError('Месяц должен быть от 01 до 12'); return; }
+    if (cvv.length !== 3) { showPayError('Введите 3 цифры CVV'); return; }
+
+    topup(amount);
+  });
+
+  function showPayError(msg) {
+    payErr.textContent = msg;
+    payErr.style.display = 'block';
+  }
 }
 
 async function topup(amount) {
+  const overlay = document.getElementById('paymentOverlay');
+  const payBtn = document.getElementById('payBtn');
+  payBtn.disabled = true;
+  payBtn.textContent = 'Обработка...';
+
   try {
     const res = await fetch('/api/balance/topup', {
       method: 'POST',
@@ -287,9 +361,13 @@ async function topup(amount) {
     user.balance = data.balance;
     Auth.updateUser(user);
     updateAuthUI();
+    overlay.style.display = 'none';
     showToast('Баланс пополнен на ' + formatPrice(amount));
-    document.getElementById('topupAmount').value = '';
   } catch { showToast('Ошибка пополнения'); }
+  finally {
+    payBtn.disabled = false;
+    payBtn.textContent = 'Оплатить';
+  }
 }
 
 async function loadOrders() {

@@ -135,18 +135,43 @@
       <div class="account-card">
         <h2>Баланс</h2>
         <div class="balance-display" id="balanceDisplay">0 &#8381;</div>
-        <div class="topup-section">
-          <div class="topup-presets" id="topupPresets">
-            <button class="topup-btn" data-amount="1000">1 000 &#8381;</button>
-            <button class="topup-btn" data-amount="5000">5 000 &#8381;</button>
-            <button class="topup-btn" data-amount="10000">10 000 &#8381;</button>
-            <button class="topup-btn" data-amount="50000">50 000 &#8381;</button>
-            <button class="topup-btn" data-amount="100000">100 000 &#8381;</button>
-            <button class="topup-btn" data-amount="500000">500 000 &#8381;</button>
-          </div>
-          <div class="topup-custom">
-            <input type="number" id="topupAmount" class="form-input" placeholder="Своя сумма" min="1">
-            <button class="btn btn--primary" id="topupBtn">Пополнить</button>
+        <button class="btn btn--primary" id="openTopupBtn" style="margin-top:12px;">Пополнить баланс</button>
+      </div>
+
+      <!-- Модальное окно оплаты -->
+      <div class="payment-overlay" id="paymentOverlay" style="display:none;">
+        <div class="payment-modal">
+          <h2 class="payment-modal__title">Пополнение баланса</h2>
+          <div class="payment-form">
+            <label class="payment-label">Сумма пополнения</label>
+            <div class="topup-presets" id="topupPresets">
+              <button class="topup-preset-btn" data-amount="1000">1 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="5000">5 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="10000">10 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="50000">50 000 &#8381;</button>
+            </div>
+            <input type="text" id="topupAmount" class="payment-input" placeholder="Или введите сумму" inputmode="numeric">
+
+            <label class="payment-label" style="margin-top:18px;">Номер карты</label>
+            <input type="text" id="cardNumber" class="payment-input payment-input--card" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
+
+            <div class="payment-row">
+              <div class="payment-col">
+                <label class="payment-label">Срок действия</label>
+                <input type="text" id="cardExpiry" class="payment-input" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
+              </div>
+              <div class="payment-col">
+                <label class="payment-label">CVV</label>
+                <input type="password" id="cardCvv" class="payment-input" placeholder="•••" maxlength="3" inputmode="numeric" autocomplete="cc-csc">
+              </div>
+            </div>
+
+            <div class="payment-error" id="paymentError" style="display:none;"></div>
+
+            <div class="payment-actions">
+              <button class="btn btn--primary payment-btn" id="payBtn">Оплатить</button>
+              <button class="btn btn--outline payment-btn" id="cancelPayBtn">Отмена</button>
+            </div>
           </div>
         </div>
       </div>

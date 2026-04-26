@@ -781,15 +781,15 @@ img { max-width: 100%; height: auto; }
 [data-theme="light"] textarea {
   background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
 }
-[data-theme="light"] .topup-custom input {
+[data-theme="light"] .payment-input {
   background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;
 }
-[data-theme="light"] .topup-custom input::placeholder { color: #94a3b8; }
-[data-theme="light"] .topup-custom input:focus { background: #fff; border-color: #6366f1; }
-[data-theme="light"] .topup-btn {
+[data-theme="light"] .payment-input::placeholder { color: #94a3b8; }
+[data-theme="light"] .payment-input:focus { background: #fff; border-color: #6366f1; }
+[data-theme="light"] .topup-preset-btn {
   background: #f1f5f9; border-color: #cbd5e1; color: #1e293b;
 }
-[data-theme="light"] .topup-btn:hover {
+[data-theme="light"] .topup-preset-btn:hover {
   background: #eef2ff; border-color: #6366f1; color: #4f46e5;
 }
 [data-theme="light"] .account-card strong { color: #1e293b; }
@@ -870,35 +870,51 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ── Пополнение ── */
-.topup-presets {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+/* ── Модальное окно оплаты ── */
+.payment-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
 }
-.topup-btn {
-  padding: 8px 16px;
-  background: var(--bg-light);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  cursor: pointer;
-  font-size: .9rem;
-  transition: var(--transition);
+.payment-modal {
+  background: var(--card-bg); border-radius: 16px;
+  padding: 32px; width: 420px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
 }
-.topup-btn:hover {
-  border-color: var(--primary);
-  background: rgba(99,102,241,.15);
-  color: var(--primary-light);
+.payment-modal__title {
+  margin: 0 0 20px; font-size: 1.3rem; color: var(--text); text-align: center;
 }
-.topup-custom {
-  display: flex; gap: 8px; align-items: center;
+.payment-form { display: flex; flex-direction: column; gap: 8px; }
+.payment-label {
+  font-size: .85rem; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px;
 }
-.topup-custom input {
-  flex: 1; padding: 12px 16px;
+.payment-input {
+  width: 100%; padding: 14px 16px; box-sizing: border-box;
   background: var(--bg); border: 2px solid var(--border);
-  border-radius: 10px; font-size: .95rem; outline: none;
+  border-radius: 10px; font-size: 1rem; outline: none;
   color: var(--text); transition: var(--transition); font-family: inherit;
 }
-.topup-custom input::placeholder { color: var(--text-muted); }
-.topup-custom input:focus { border-color: var(--primary); background: var(--bg-light); }
+.payment-input::placeholder { color: var(--text-muted); }
+.payment-input:focus { border-color: var(--primary); background: var(--bg-light); }
+.payment-input--card { font-size: 1.15rem; letter-spacing: 2px; font-family: 'Courier New', monospace; }
+.payment-row { display: flex; gap: 12px; }
+.payment-col { flex: 1; }
+.payment-error {
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+  color: #ef4444; padding: 10px 14px; border-radius: 8px; font-size: .9rem;
+}
+.payment-actions { display: flex; gap: 12px; margin-top: 12px; }
+.payment-btn { flex: 1; padding: 14px; font-size: 1rem; }
+.topup-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.topup-preset-btn {
+  padding: 8px 16px; background: var(--bg-light);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); cursor: pointer; font-size: .9rem;
+  transition: var(--transition);
+}
+.topup-preset-btn:hover { border-color: var(--primary); background: rgba(99,102,241,.15); color: var(--primary-light); }
+.topup-preset-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
 
 /* ── Модальное окно ── */
 .modal-overlay {

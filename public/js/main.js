@@ -276,6 +276,7 @@ function updateAuthUI() {
   if (!authBlock) return;
   if (Auth.isLoggedIn()) {
     const user = Auth.getUser();
+    if (!user) { Auth.logout(); return; }
     const balanceStr = typeof user.balance === 'number' ? formatPrice(user.balance) : '';
     let links = '';
     if (balanceStr) links += `<span class="header__balance" title="Баланс">${balanceStr}</span>`;

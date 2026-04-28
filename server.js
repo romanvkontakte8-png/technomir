@@ -318,13 +318,14 @@ app.put('/api/admin/users/:id', authMiddleware, adminMiddleware, (req, res) => {
 
   if (name) db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, user.id);
   if (email) {
+    if (!isValidEmail(email)) return res.status(400).json({ error: 'Некорректный формат почты' });
     const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, user.id);
     if (exists) return res.status(400).json({ error: 'Эта почта уже используется' });
     db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, user.id);
   }
   if (phone !== undefined) db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(phone || null, user.id);
   if (role && ['client', 'admin'].includes(role)) db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, user.id);
-  if (balance !== undefined) db.prepare('UPDATE users SET balance = ? WHERE id = ?').run(parseInt(balance) || 0, user.id);
+  if (balance !== undefined) db.prepare('UPDATE users SET balance = ? WHERE id = ?').run(Math.max(0, parseInt(balance) || 0), user.id);
   if (password && password.length >= 4) db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashPassword(password), user.id);
 
   const updated = db.prepare('SELECT id, name, email, phone, role, balance, created_at FROM users WHERE id = ?').get(user.id);

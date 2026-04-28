@@ -19,9 +19,6 @@ try {
   process.exit(1);
 }
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json({ limit: '1mb' }));
-
 /* Заголовки безопасности */
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -30,6 +27,9 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json({ limit: '1mb' }));
 
 /* ───────── Утилиты авторизации ───────── */
 

@@ -86,7 +86,7 @@ img { max-width: 100%; height: auto; }
 .product-card__qty-control {
   display: flex; align-items: center; justify-content: center;
   gap: 0; border-radius: 12px; overflow: hidden;
-  border: 2px solid var(--primary); background: var(--card-bg);
+  border: 2px solid var(--primary); background: var(--bg-card);
 }
 .qty-btn {
   width: 40px; height: 38px; border: none; cursor: pointer;
@@ -885,9 +885,12 @@ img { max-width: 100%; height: auto; }
   display: flex; align-items: center; justify-content: center;
 }
 .payment-modal {
-  background: var(--card-bg); border-radius: 16px;
+  background: var(--bg-card); border-radius: 16px;
   padding: 32px; width: 420px; max-width: 95vw;
   box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+[data-theme="light"] .payment-modal {
+  background: #fff; color: #1e293b;
 }
 .payment-modal__title {
   margin: 0 0 20px; font-size: 1.3rem; color: var(--text); text-align: center;

@@ -256,7 +256,7 @@ app.post('/api/balance/topup', authMiddleware, (req, res) => {
   const { amount } = req.body;
   const val = parseInt(amount);
   if (!val || val <= 0) return res.status(400).json({ error: 'Укажите положительную сумму' });
-  if (val > 1000000) return res.status(400).json({ error: 'Максимальная сумма пополнения: 1 000 000 ₽' });
+  if (val > 100000000) return res.status(400).json({ error: 'Максимальная сумма пополнения: 100 000 000 ₽' });
 
   db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(val, req.user.id);
   const user = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);

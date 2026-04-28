@@ -10,6 +10,7 @@ const STATUS_LABELS = {
 };
 
 let allOrders = [];
+let allUsers = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
@@ -28,6 +29,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('statusFilter').addEventListener('change', () => renderOrders());
+
+  const roleFilter = document.getElementById('roleFilter');
+  const userSearch = document.getElementById('userSearch');
+  if (roleFilter) roleFilter.addEventListener('change', () => renderUsers());
+  if (userSearch) userSearch.addEventListener('input', () => renderUsers());
 
   await loadOrders();
 });
@@ -112,55 +118,64 @@ function renderOrders() {
 
 async function loadUsers() {
   const loading = document.getElementById('usersLoading');
-  const listEl = document.getElementById('adminUsersList');
   loading.style.display = 'block';
 
   try {
     const res = await fetch('/api/admin/users', { headers: Auth.headers() });
     if (!res.ok) throw new Error('Ошибка');
-    const users = await res.json();
+    allUsers = await res.json();
     loading.style.display = 'none';
-
-    if (users.length === 0) {
-      listEl.innerHTML = '<p>Нет пользователей</p>';
-      return;
-    }
-
-    let html = `
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th>
-            <th>Роль</th><th>Баланс</th><th>Заказов</th><th>Сумма покупок</th><th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-    for (const u of users) {
-      html += `
-        <tr>
-          <td>${u.id}</td>
-          <td>${escapeHtml(u.name)}</td>
-          <td>${escapeHtml(u.email)}</td>
-          <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
-          <td><span class="role-badge role--${u.role}">${u.role === 'admin' ? 'Админ' : 'Клиент'}</span></td>
-          <td>${formatPrice(u.balance || 0)}</td>
-          <td>${u.order_count}</td>
-          <td>${formatPrice(u.total_spent)}</td>
-          <td><button class="btn btn--sm btn--outline edit-user-btn" data-id="${u.id}" data-name="${escapeHtml(u.name)}" data-email="${escapeHtml(u.email)}" data-phone="${escapeHtml(u.phone || '')}" data-role="${u.role}" data-balance="${u.balance || 0}">Редактировать</button></td>
-        </tr>
-      `;
-    }
-    html += '</tbody></table>';
-    listEl.innerHTML = html;
-
-    listEl.querySelectorAll('.edit-user-btn').forEach(btn => {
-      btn.addEventListener('click', () => openEditModal(btn.dataset));
-    });
-
+    renderUsers();
   } catch (e) {
     loading.textContent = 'Ошибка загрузки';
   }
+}
+
+function renderUsers() {
+  const listEl = document.getElementById('adminUsersList');
+  const roleFilter = document.getElementById('roleFilter').value;
+  const searchQuery = (document.getElementById('userSearch').value || '').trim().toLowerCase();
+
+  let users = allUsers;
+  if (roleFilter) users = users.filter(u => u.role === roleFilter);
+  if (searchQuery) users = users.filter(u => u.name.toLowerCase().includes(searchQuery));
+
+  if (users.length === 0) {
+    listEl.innerHTML = '<p class="empty-state">Пользователей не найдено</p>';
+    return;
+  }
+
+  let html = `
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th>
+          <th>Роль</th><th>Баланс</th><th>Заказов</th><th>Сумма покупок</th><th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  for (const u of users) {
+    html += `
+      <tr>
+        <td>${u.id}</td>
+        <td>${escapeHtml(u.name)}</td>
+        <td>${escapeHtml(u.email)}</td>
+        <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
+        <td><span class="role-badge role--${u.role}">${u.role === 'admin' ? 'Админ' : 'Клиент'}</span></td>
+        <td>${formatPrice(u.balance || 0)}</td>
+        <td>${u.order_count}</td>
+        <td>${formatPrice(u.total_spent)}</td>
+        <td><button class="btn btn--sm btn--outline edit-user-btn" data-id="${u.id}" data-name="${escapeHtml(u.name)}" data-email="${escapeHtml(u.email)}" data-phone="${escapeHtml(u.phone || '')}" data-role="${u.role}" data-balance="${u.balance || 0}">Редактировать</button></td>
+      </tr>
+    `;
+  }
+  html += '</tbody></table>';
+  listEl.innerHTML = html;
+
+  listEl.querySelectorAll('.edit-user-btn').forEach(btn => {
+    btn.addEventListener('click', () => openEditModal(btn.dataset));
+  });
 }
 
 function openEditModal(data) {

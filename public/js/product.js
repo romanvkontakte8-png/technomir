@@ -73,7 +73,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           showToast('Максимум 6 товаров для сравнения');
           return;
         }
-        CompareList.add(product.id);
+        const result = CompareList.add(product.id, product.category_id);
+        if (result === false) {
+          showToast('Можно сравнивать только товары одной категории');
+          return;
+        }
         compareBtn.classList.add('active');
         showToast('Товар добавлен к сравнению');
       }

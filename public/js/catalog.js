@@ -108,7 +108,7 @@ function createProductCard(product) {
   compareBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleCompare(product.id, compareBtn);
+    toggleCompare(product.id, compareBtn, product.category_id);
   });
 
   renderCartControl(card, product);
@@ -161,7 +161,7 @@ function renderCartControl(card, product) {
   }
 }
 
-function toggleCompare(id, btn) {
+function toggleCompare(id, btn, categoryId) {
   if (CompareList.has(id)) {
     CompareList.remove(id);
     btn.classList.remove('active');
@@ -171,7 +171,11 @@ function toggleCompare(id, btn) {
       showToast('Максимум 6 товаров для сравнения');
       return;
     }
-    CompareList.add(id);
+    const result = CompareList.add(id, categoryId);
+    if (result === false) {
+      showToast('Можно сравнивать только товары одной категории');
+      return;
+    }
     btn.classList.add('active');
     showToast('Товар добавлен к сравнению');
   }

@@ -66,6 +66,15 @@
 
     <!-- Клиенты -->
     <div class="admin-panel" id="usersPanel" style="display:none;">
+      <div class="admin-filters" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <label>Роль: </label>
+        <select id="roleFilter">
+          <option value="">Все</option>
+          <option value="admin">Администраторы</option>
+          <option value="client">Клиенты</option>
+        </select>
+        <input type="text" id="userSearch" class="form-input" placeholder="Поиск по имени..." style="max-width:250px;padding:8px 12px;">
+      </div>
       <div class="loading" id="usersLoading">Загрузка...</div>
       <div id="adminUsersList"></div>
     </div>

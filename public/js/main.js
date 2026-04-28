@@ -156,6 +156,7 @@ const Cart = {
 
 const CompareList = {
   KEY: 'technomir_compare',
+  CAT_KEY: 'technomir_compare_cat',
 
   get() {
     try {
@@ -163,12 +164,29 @@ const CompareList = {
     } catch { return []; }
   },
 
-  add(id) {
+  getCategoryId() {
+    const v = localStorage.getItem(this.CAT_KEY);
+    return v ? Number(v) : null;
+  },
+
+  add(id, categoryId) {
     const list = this.get();
     id = Number(id);
+    if (categoryId !== undefined) categoryId = Number(categoryId);
+
+    if (list.length > 0 && categoryId !== undefined) {
+      const currentCat = this.getCategoryId();
+      if (currentCat !== null && currentCat !== categoryId) {
+        return false;
+      }
+    }
+
     if (!list.includes(id)) {
       list.push(id);
       localStorage.setItem(this.KEY, JSON.stringify(list));
+      if (categoryId !== undefined && list.length === 1) {
+        localStorage.setItem(this.CAT_KEY, String(categoryId));
+      }
     }
     this.updateBadge();
     return list;
@@ -179,6 +197,7 @@ const CompareList = {
     id = Number(id);
     list = list.filter(i => i !== id);
     localStorage.setItem(this.KEY, JSON.stringify(list));
+    if (list.length === 0) localStorage.removeItem(this.CAT_KEY);
     this.updateBadge();
     return list;
   },
@@ -189,6 +208,7 @@ const CompareList = {
 
   clear() {
     localStorage.removeItem(this.KEY);
+    localStorage.removeItem(this.CAT_KEY);
     this.updateBadge();
   },
 

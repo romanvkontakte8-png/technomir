@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Товар — ТехноМир</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('technomir_theme')||'light');</script>
+</head>
+<body>
+
+<!-- Шапка -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <span class="logo__icon">TM</span>
+      <span class="logo__text">ТехноМир</span>
+    </a>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="search-bar__input" placeholder="Поиск товаров...">
+      <button class="search-bar__btn" id="searchBtn">Найти</button>
+    </div>
+
+    <div class="header__actions">
+      <a href="index.html" class="header__link">Главная</a>
+      <a href="catalog.html" class="header__link">Каталог</a>
+      <a href="cart.html" class="header__cart" id="cartLink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <span>Корзина</span>
+        <span class="badge" id="cartBadge" style="display:none">0</span>
+      </a>
+      <a href="compare.html" class="header__compare" id="compareLink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
+        </svg>
+        <span>Сравнение</span>
+        <span class="badge" id="compareBadge">0</span>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="Сменить тему"></button>
+      <div class="header__auth" id="authBlock">
+        <a href="login.html" class="header__login-btn">Войти</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <nav class="breadcrumbs" id="breadcrumbs">
+      <a href="index.html">Главная</a> &rarr; <span id="breadcrumbCategory">Категория</span> &rarr; <span id="breadcrumbProduct">Товар</span>
+    </nav>
+
+    <div class="product-page" id="productPage" style="display:none;">
+      <div class="product-page__gallery">
+        <img src="" alt="" class="product-page__image" id="productImage">
+      </div>
+
+      <div class="product-page__info">
+        <h1 class="product-page__title" id="productTitle"></h1>
+        <p class="product-page__brand" id="productBrand"></p>
+        <p class="product-page__desc" id="productDesc"></p>
+
+        <div class="product-page__price-block">
+          <span class="product-page__price" id="productPrice"></span>
+          <span class="product-page__old-price" id="productOldPrice"></span>
+        </div>
+
+        <div class="product-page__actions">
+          <div id="productCartControl" class="product-page__cart-control"></div>
+          <button class="btn btn--compare" id="compareBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
+            </svg>
+            Сравнить
+          </button>
+        </div>
+
+        <div class="product-page__stock" id="productStock"></div>
+      </div>
+    </div>
+
+    <!-- Характеристики -->
+    <section class="specs-section" id="specsSection" style="display:none;">
+      <h2>Характеристики</h2>
+      <div id="specsContainer"></div>
+    </section>
+
+    <div class="loading" id="loading">Загрузка...</div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col">
+      <h3>ТехноМир</h3>
+      <p>Интернет-магазин электроники<br>г. Москва, ул. Профсоюзная, д. 56</p>
+      <p class="footer__copy">Дипломный проект — Григорьев Я.М., СИП 433/22</p>
+    </div>
+    <div class="footer__col">
+      <h3>Информация</h3>
+      <ul>
+        <li><a href="#">Доставка</a></li>
+        <li><a href="#">О магазине</a></li>
+        <li><a href="#">Гарантия</a></li>
+        <li><a href="#">Контакты</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h3>Контакты</h3>
+      <p>8 (963) 753-88-33</p>
+      <p>info@texnomir.ru</p>
+      <p>Пн-Вс: 10:00 — 21:00</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/product.js"></script>
+</body>
+</html>

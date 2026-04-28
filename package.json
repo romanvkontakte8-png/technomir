@@ -1,0 +1,14 @@
+{
+  "name": "technomir-compare",
+  "version": "1.0.0",
+  "description": "Система сравнения товаров для веб-сайта сети ТехноМир. Дипломный проект — Григорьев Я.М., СИП 433/22",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "init-db": "node db/init.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0"
+  }
+}

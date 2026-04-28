@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мой аккаунт — ТехноМир</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('technomir_theme')||'light');</script>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <span class="logo__icon">TM</span>
+      <span class="logo__text">ТехноМир</span>
+    </a>
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="search-bar__input" placeholder="Поиск товаров...">
+      <button class="search-bar__btn" id="searchBtn">Найти</button>
+    </div>
+    <div class="header__actions">
+      <a href="index.html" class="header__link">Главная</a>
+      <a href="catalog.html" class="header__link">Каталог</a>
+      <a href="cart.html" class="header__cart" id="cartLink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <span>Корзина</span>
+        <span class="badge" id="cartBadge" style="display:none">0</span>
+      </a>
+      <a href="compare.html" class="header__compare" id="compareLink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
+        </svg>
+        <span>Сравнение</span>
+        <span class="badge" id="compareBadge">0</span>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="Сменить тему"></button>
+      <div class="header__auth" id="authBlock"><a href="login.html" class="header__login-btn">Войти</a></div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <h1 class="page-title">Личный кабинет</h1>
+
+    <div class="account-grid">
+      <!-- Профиль -->
+      <div class="account-card">
+        <h2>Профиль</h2>
+        <div id="profileView"></div>
+
+        <!-- Имя -->
+        <div style="margin-top:16px;">
+          <div class="form-group" id="nameEditGroup" style="display:none;">
+            <label>Имя</label>
+            <input type="text" id="profName" class="form-input">
+            <div style="margin-top:8px;display:flex;gap:8px;">
+              <button class="btn btn--primary" id="saveNameBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelNameBtn">Отмена</button>
+            </div>
+          </div>
+          <button class="btn btn--outline" id="editNameBtn" style="margin-top:4px;">Изменить имя</button>
+        </div>
+
+        <!-- Почта -->
+        <div style="margin-top:12px;">
+          <div id="emailEditGroup" style="display:none;">
+            <div class="form-group">
+              <label>Новая почта</label>
+              <input type="email" id="profEmail" class="form-input" placeholder="Новая почта">
+            </div>
+            <div class="form-group">
+              <label>Текущий пароль</label>
+              <input type="password" id="emailConfirmPass" class="form-input" placeholder="Введите текущий пароль">
+            </div>
+            <div class="form-error" id="emailError" style="display:none"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn--primary" id="saveEmailBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelEmailBtn">Отмена</button>
+            </div>
+          </div>
+          <button class="btn btn--outline" id="editEmailBtn">Изменить почту</button>
+        </div>
+
+        <!-- Телефон -->
+        <div style="margin-top:12px;" id="phoneSection">
+          <div id="phoneEditGroup" style="display:none;">
+            <div class="form-group">
+              <label>Номер телефона</label>
+              <input type="tel" id="profPhone" class="form-input" placeholder="+7 (___) ___-__-__">
+            </div>
+            <div class="form-group">
+              <label>Текущий пароль</label>
+              <input type="password" id="phoneConfirmPass" class="form-input" placeholder="Введите текущий пароль">
+            </div>
+            <div class="form-error" id="phoneError" style="display:none"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn--primary" id="savePhoneBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelPhoneBtn">Отмена</button>
+            </div>
+          </div>
+          <div id="phoneButtons"></div>
+        </div>
+
+        <!-- Пароль -->
+        <div style="margin-top:12px;">
+          <div id="passEditGroup" style="display:none;">
+            <div class="form-group">
+              <label>Текущий пароль</label>
+              <input type="password" id="passOld" class="form-input" placeholder="Текущий пароль">
+            </div>
+            <div class="form-group">
+              <label>Новый пароль</label>
+              <input type="password" id="passNew" class="form-input" placeholder="Новый пароль (мин. 4 символа)">
+            </div>
+            <div class="form-group">
+              <label>Подтвердите новый пароль</label>
+              <input type="password" id="passNew2" class="form-input" placeholder="Повторите новый пароль">
+            </div>
+            <div class="form-error" id="passError" style="display:none"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn--primary" id="savePassBtn">Сохранить</button>
+              <button class="btn btn--outline" id="cancelPassBtn">Отмена</button>
+            </div>
+          </div>
+          <button class="btn btn--outline" id="editPassBtn">Изменить пароль</button>
+        </div>
+      </div>
+
+      <!-- Баланс -->
+      <div class="account-card">
+        <h2>Баланс</h2>
+        <div class="balance-display" id="balanceDisplay">0 &#8381;</div>
+        <button class="btn btn--primary" id="openTopupBtn" style="margin-top:12px;">Пополнить баланс</button>
+      </div>
+
+      <!-- Модальное окно оплаты -->
+      <div class="payment-overlay" id="paymentOverlay" style="display:none;">
+        <div class="payment-modal">
+          <h2 class="payment-modal__title">Пополнение баланса</h2>
+          <div class="payment-form">
+            <label class="payment-label">Сумма пополнения</label>
+            <div class="topup-presets" id="topupPresets">
+              <button class="topup-preset-btn" data-amount="1000">1 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="5000">5 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="10000">10 000 &#8381;</button>
+              <button class="topup-preset-btn" data-amount="50000">50 000 &#8381;</button>
+            </div>
+            <input type="text" id="topupAmount" class="payment-input" placeholder="Или введите сумму" inputmode="numeric">
+
+            <label class="payment-label" style="margin-top:18px;">Номер карты</label>
+            <input type="text" id="cardNumber" class="payment-input payment-input--card" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
+
+            <label class="payment-label">Владелец карты</label>
+            <input type="text" id="cardHolder" class="payment-input" placeholder="IVANOV IVAN" autocomplete="cc-name" style="text-transform:uppercase;">
+
+            <div class="payment-row">
+              <div class="payment-col">
+                <label class="payment-label">Срок действия</label>
+                <input type="text" id="cardExpiry" class="payment-input" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
+              </div>
+              <div class="payment-col">
+                <label class="payment-label">CVV</label>
+                <input type="password" id="cardCvv" class="payment-input" placeholder="•••" maxlength="3" inputmode="numeric" autocomplete="cc-csc">
+              </div>
+            </div>
+
+            <div class="payment-error" id="paymentError" style="display:none;"></div>
+
+            <div class="payment-actions">
+              <button class="btn btn--primary payment-btn" id="payBtn">Оплатить</button>
+              <button class="btn btn--outline payment-btn" id="cancelPayBtn">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:32px;">Мои заказы</h2>
+    <div class="loading" id="loading">Загрузка...</div>
+    <div id="ordersEmpty" class="empty-state" style="display:none;">
+      <p>У вас пока нет заказов</p>
+      <a href="catalog.html" class="btn btn--primary">Перейти в каталог</a>
+    </div>
+    <div id="ordersList"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col">
+      <h3>ТехноМир</h3>
+      <p>Интернет-магазин электроники<br>г. Москва, ул. Профсоюзная, д. 56</p>
+      <p class="footer__copy">Дипломный проект — Григорьев Я.М., СИП 433/22</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/account.js"></script>
+</body>
+</html>

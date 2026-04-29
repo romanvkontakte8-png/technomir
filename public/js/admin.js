@@ -9,8 +9,27 @@ const STATUS_LABELS = {
   cancelled: 'Отменён'
 };
 
+const ALLOWED_TRANSITIONS = {
+  new: ['confirmed', 'cancelled'],
+  confirmed: ['delivered', 'cancelled'],
+  delivered: [],
+  cancelled: []
+};
+
 let allOrders = [];
 let allUsers = [];
+
+function buildStatusSelect(order) {
+  const allowed = ALLOWED_TRANSITIONS[order.status] || [];
+  if (allowed.length === 0) {
+    return `<span class="status-badge status--${order.status}">${STATUS_LABELS[order.status] || order.status}</span>`;
+  }
+  const options = [order.status, ...allowed];
+  const optionsHTML = options.map(s =>
+    `<option value="${s}" ${s === order.status ? 'selected' : ''}>${STATUS_LABELS[s] || s}</option>`
+  ).join('');
+  return `<select class="status-select" data-id="${order.id}">${optionsHTML}</select>`;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
@@ -88,12 +107,7 @@ function renderOrders() {
         ${order.address ? `<span class="order-card__address">Адрес: ${escapeHtml(order.address)}</span>` : ''}
         <div class="order-card__actions">
           <label>Статус:</label>
-          <select class="status-select" data-id="${order.id}">
-            <option value="new" ${order.status === 'new' ? 'selected' : ''}>Новый</option>
-            <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Подтверждён</option>
-            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Доставлен</option>
-            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Отменён</option>
-          </select>
+          ${buildStatusSelect(order)}
         </div>
       </div>
     `;

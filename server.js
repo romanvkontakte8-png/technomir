@@ -435,8 +435,9 @@ app.put('/api/admin/orders/:id/status', authMiddleware, adminMiddleware, (req, r
 
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  const statusLabels = { new: 'Новый', confirmed: 'Подтверждён', delivered: 'Доставлен', cancelled: 'Отменён' };
   if (!(allowedTransitions[order.status] || []).includes(status)) {
-    return res.status(400).json({ error: `Нельзя сменить статус с "${order.status}" на "${status}"` });
+    return res.status(400).json({ error: `Нельзя сменить статус с «${statusLabels[order.status] || order.status}» на «${statusLabels[status] || status}»` });
   }
 
   const updateStatus = db.transaction(() => {
